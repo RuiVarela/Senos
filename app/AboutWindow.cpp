@@ -27,7 +27,7 @@ namespace sns {
 		{
 			ImGui::TextDisabled("SENOS %s:", app()->versionName().c_str());
 			ImGui::Indent();
-			ImGui::TextWrapped("An sound exploration tool from a developer point of view.");
+			ImGui::TextWrapped("A sound exploration tool from a developer point of view.");
 			ImGui::Spacing();
 			if (ImGui::Button(github)) 
 				platformShellOpen(github);

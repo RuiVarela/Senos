@@ -1,5 +1,5 @@
 # Senos
-Senos is sound exploration tool from a developer point of view.
+Senos is sound exploration tool from a developer point of view.   
 It is very lightweight, can be used as a toy or a minimal song composer.
 
 Features:
