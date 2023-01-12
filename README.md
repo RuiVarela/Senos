@@ -1,52 +1,40 @@
 # Senos
-Audio exploration 
+Senos is sound exploration tool from a developer point of view.
+It is very lightweight, can be used as a toy or a minimal song composer.
 
+Features:
+- 4 playable instruments
+  - SynthMachine, a minimal synthesizer
+  - Dx7 FM synthesizer
+  - 303
+  - DrumMachine, 808 909
+- Step Sequencer
+- Chainer (sequencer chaining)
+- Software keyboard 
+- Midi Support
 
-## Clone:
-
+## Development
 ```bash
-> git git@github.com:RuiVarela/Senos.git
-> cd Senos
-```
+git git@github.com:RuiVarela/Senos.git
+cd Senos
 
-## Build:
+mkdir build
+cd build
 
-```bash
-> mkdir build
-> cd build
+# General
+cmake ..
+cmake --build .
 
-> cmake ..
-> cmake --build .
-```
+# To build a Release version on Linux and Mac:
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=MinSizeRel ..
+cmake --build . -- -j 8
+./Senos
 
-To build a Release version on Linux and Mac:
-
-```bash
-> cmake -DCMAKE_BUILD_TYPE=Release ..
-> cmake -DCMAKE_BUILD_TYPE=MinSizeRel ..
-> cmake --build . -- -j 8
-```
-
-To build a Release version on Windows with the VisualStudio toolchain:
-
-```bash
-> cmake ..
-> cmake --build . --config MinSizeRel
-```
-
-NOTE: on Linux you'll also need to install the 'usual' dev-packages needed for X11+GL development.
-
-## Run:
-
-On Linux and macOS:
-```bash
-> ./Senos
-```
-
-On Windows with the Visual Studio toolchain the exe is in a subdirectory:
-```bash
-> Debug\Senos.exe
-> MinSizeRel\Senos.exe
+# To build a Release version on Windows with the VisualStudio toolchain:
+cmake ..
+cmake --build . --config MinSizeRel
+MinSizeRel\Senos.exe
 ```
 
 # Credits
