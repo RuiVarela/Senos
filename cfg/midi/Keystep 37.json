@@ -1,0 +1,47 @@
+{
+    "SynthMachine": {
+        "Volume": 1,
+
+        "OscDetune_0": 74,
+        "OscVolume_0": 71,
+        "LfoFrequency_0": 76,
+        "LfoPitch_0": 77,
+
+        "OscDetune_1": 73,
+        "OscVolume_1": 75,
+        "LfoFrequency_1": 79,
+        "LfoPitch_1": 72,
+
+        "OscDetune_2": 18,
+        "OscVolume_2": 19,
+        "LfoFrequency_2": 16,
+        "LfoPitch_2": 17,
+
+        "FilterCutoff_0": 80,
+        "FilterResonance_0": 81,
+        "EnvAttack_0": 82,
+        "EnvRelease_0": 83
+    },
+	
+	"DrumMachine": { 
+		"Volume": 77
+	},
+	
+    "Dx7": { 
+		"Volume": 77
+	},
+	
+	"TB-303": {
+		"ModulationWheel": 1,
+		
+		"FilterCutoff_0": 74,
+		"FilterResonance_0": 71,
+		"EnvMod_0": 76,
+		"EnvDecay_0": 77,
+
+		"Tuning": 73,
+		"Accent": 75,
+		"Volume": 79,
+		"OscKind_0": 72
+	}
+}
