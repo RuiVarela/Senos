@@ -142,7 +142,7 @@ namespace sns {
 
 		int parameter_base = getFilterBase(0);
 
-		pKnob("Cutoff", parameter_base + ParameterFilterCutoff);
+		pKnob("Cutoff", parameter_base + ParameterFilterCutoff, -100.0f, 100.0f);
 		ImGui::SameLine();
 		pKnob("Res.", parameter_base + ParameterFilterResonance);
 		ImGui::SameLine();
@@ -156,13 +156,7 @@ namespace sns {
 		ImGui::PushItemWidth(ImGui::GetFontSize() * 5.5f);
 		pCombo("##Kind", parameter_base + ParameterFilterKind, Filter::kindNames());
 
-		if(pBool(parameter_base + ParameterFilterTrack, "Track")) {
-			// if we enable track, lets set the cutoff at the center
-			if (m_values[parameter_base + ParameterFilterTrack] > 0.0f) {
-				m_values[parameter_base + ParameterFilterCutoff] = 0.5f;
-				applyInstrumentValues();
-			}
-		}
+		pBool(parameter_base + ParameterFilterTrack, "Tracking");
 		ImGui::PopItemWidth();
 		ImGui::EndGroup();
 	}

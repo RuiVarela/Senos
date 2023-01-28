@@ -5,6 +5,7 @@ namespace sns {
 	constexpr int MAX_EMITERS = 8;
 
 	constexpr float DETUNE_OCTAVES = 4.0f;
+	constexpr float FILTER_OCTAVES = 4.0f;
 	constexpr float PITCH_BEND_OCTAVES = 2.0f;
 	constexpr float LFO_PITCH_SEMITONES = 2.0f;
 
@@ -285,21 +286,17 @@ namespace sns {
 	void SynthMachine::updateFilterCutoff() {
 		if (m_filter.kind() != Filter::Kind::Off) {
 
-			constexpr float max = float(SampleRate) / 3.0f;
-			constexpr float ramp_increment = (5.0f * max) / float(SampleRate);
+			float frequency = 0.0f;
 
 			if (m_filter_keyboard_tracking) {
-				float dial = (m_filter_cutoff_dial - 0.5f) * 2.0f; //-1.0f to 1.0f
-				constexpr float max_octaves = 4.0f;
-
-				float frequency = m_last_note_frequency * pow(2.0f, dial * max_octaves);
-				frequency = clampTo(frequency, 0.0f, max);
-
-				m_filter_cutoff.changeWithIncrement(frequency, ramp_increment);
+				frequency = m_last_note_frequency;
 			} else {
-				float frequency = easeInQuad(m_filter_cutoff_dial) * max;
-				m_filter_cutoff.changeWithIncrement(frequency, ramp_increment);
+				frequency = noteFrequency(72);
 			}
+
+			frequency = frequency * pow(2.0f, m_filter_cutoff_dial * FILTER_OCTAVES);
+			frequency = clampTo(frequency, 0.0f, 20000.0f);
+			m_filter_cutoff.changeWithIncrement(frequency, 1.0);
 		}
 
 
