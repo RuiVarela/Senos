@@ -50,10 +50,17 @@ namespace sns {
 		float m_lfo_pitch[SynthMachineOscCount];
 		Value m_lfo_amp[SynthMachineOscCount];
 
+		float m_last_note_frequency;
+
 		Filter m_filter;
+		float m_filter_cutoff_dial;
 		Value m_filter_cutoff;
 		Value m_filter_resonance;
 		Value m_filter_drive;
+
+		bool m_filter_keyboard_tracking;
+	
+		void updateFilterCutoff();
 
 		bool m_mono;
 		Value m_portamento;

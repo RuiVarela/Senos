@@ -108,6 +108,7 @@ namespace sns {
 				case ParameterFilterCutoff: return sfmt("FilterCutoff_%d", class_index);
 				case ParameterFilterResonance: return sfmt("FilterResonance_%d", class_index);
 				case ParameterFilterDrive: return sfmt("FilterDrive_%d", class_index);
+				case ParameterFilterTrack: return sfmt("FilterTrack_%d", class_index);
 				}
 
 			}

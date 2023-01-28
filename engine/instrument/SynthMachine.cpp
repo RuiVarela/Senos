@@ -32,9 +32,12 @@ namespace sns {
 			m_lfo_pitch[i] = 0.0f;
 		}
 
-		m_filter_cutoff = 1.0f;
+		m_last_note_frequency = 0.0f;
+		m_filter_cutoff_dial = 1.0f;
+		m_filter_cutoff = float(SampleRate) / 3.0f;
 		m_filter_resonance = 0.0f;
-		m_filter_drive = 0.0f;
+		m_filter_drive = 1.0f;
+		m_filter_keyboard_tracking = false;
 
 		m_emitter_counter = 0;
 
@@ -86,7 +89,9 @@ namespace sns {
 			values[base + ParameterFilterKind] = int(Filter::Kind::Off);
 			values[base + ParameterFilterCutoff] = 1.0f;
 			values[base + ParameterFilterResonance] = 0.0f;
-			values[base + ParameterFilterDrive] = 0.0f;
+			values[base + ParameterFilterDrive] = 1.0f;
+			values[base + ParameterFilterTrack] = 0.0f;
+			
 		}
 
 
@@ -154,15 +159,19 @@ namespace sns {
 				switch (class_parameter)
 				{
 				case ParameterFilterCutoff:
-					m_filter_cutoff.changeWithIncrement(value, FILTER_RAMP_INCREMENT);
+					m_filter_cutoff_dial = value;
 					break;
 				case ParameterFilterResonance:
 					m_filter_resonance.changeWithIncrement(value, FILTER_RAMP_INCREMENT);
+					break;
 				case ParameterFilterDrive:
 					m_filter_drive.changeWithIncrement(value, FILTER_RAMP_INCREMENT);
 					break;
 				case ParameterFilterKind:
 					m_filter.setKind(Filter::Kind(int(value)));
+					break;
+				case ParameterFilterTrack:
+					m_filter_keyboard_tracking = bool(int(value));
 					break;
 				}
 			}
@@ -200,6 +209,8 @@ namespace sns {
 		emitter.on = true;
 		emitter.killed = false;
 		emitter.produced = 0;
+
+		m_last_note_frequency = emitter.note_frequency;
 
 		for (auto const& [parameter, value] : m_values)
 			updateEmittersParameter(parameter, value, true, &emitter);
@@ -271,6 +282,33 @@ namespace sns {
 		}
 	}
 
+	void SynthMachine::updateFilterCutoff() {
+		if (m_filter.kind() != Filter::Kind::Off) {
+
+			constexpr float max = float(SampleRate) / 3.0f;
+			constexpr float ramp_increment = (5.0f * max) / float(SampleRate);
+
+			if (m_filter_keyboard_tracking) {
+				float dial = (m_filter_cutoff_dial - 0.5f) * 2.0f; //-1.0f to 1.0f
+				constexpr float max_octaves = 4.0f;
+
+				float frequency = m_last_note_frequency * pow(2.0f, dial * max_octaves);
+				frequency = clampTo(frequency, 0.0f, max);
+
+				m_filter_cutoff.changeWithIncrement(frequency, ramp_increment);
+			} else {
+				float frequency = easeInQuad(m_filter_cutoff_dial) * max;
+				m_filter_cutoff.changeWithIncrement(frequency, ramp_increment);
+			}
+		}
+
+
+		//Log::d("FFF", sfmt("frequency  %.3f", frequency));
+		m_filter.setCutoff(m_filter_cutoff.next());
+		m_filter.setResonance(m_filter_resonance.next());
+		m_filter.setDrive(m_filter_drive.next());
+	}
+
 
 	float SynthMachine::next() {
 		prune();
@@ -282,11 +320,6 @@ namespace sns {
 		}
 
 		m_pitch_bend.next();
-
-		m_filter.setCutoff(m_filter_cutoff.next());
-		m_filter.setResonance(m_filter_resonance.next());
-		m_filter.setDrive(m_filter_drive.next());
-
 
 		float machine_sample = 0.0;
 		for (auto& emitter : m_emiters) {
@@ -333,6 +366,8 @@ namespace sns {
 		}
 
 		machine_sample = SoftClip(machine_sample);
+
+		updateFilterCutoff();
 		machine_sample = m_filter.next(machine_sample);
 		machine_sample *= m_volume.next();
 
@@ -382,7 +417,9 @@ namespace sns {
 						portamento_id = current.id;
 
 						m_portamento.set(current.note_frequency);
-						m_portamento.changeWithTime(noteFrequency(note), m_portamento_time);
+						float next_frequency = noteFrequency(note);
+						m_portamento.changeWithTime(next_frequency, m_portamento_time);
+						m_last_note_frequency = next_frequency;
 
 						current.note = note;
 						break;

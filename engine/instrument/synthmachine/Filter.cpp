@@ -4,6 +4,7 @@
 namespace sns {
 
     // from daisydsp
+    //https://www.musicdsp.org/en/latest/Filters/92-state-variable-filter-double-sampled-stable.html
     struct StateVariableFilter {
 
         StateVariableFilter() {
@@ -173,9 +174,7 @@ namespace sns {
         if (m_kind == Kind::Off) {
             return;
         } else {
-            constexpr float max = float(SampleRate) / 3.0f;
-            float frequency = easeInQuad(value) * max;
-            m->svf.SetFreq(frequency);
+            m->svf.SetFreq(value);
         }
     }
 
@@ -186,7 +185,8 @@ namespace sns {
         if (m_kind == Kind::Off) {
             return;
         } else {
-            m->svf.SetRes(value);
+
+            m->svf.SetRes(clampTo(value, 0.0f, 0.999f));
         }
     }
 
@@ -197,7 +197,7 @@ namespace sns {
         if (m_kind == Kind::Off) {
             return;
         } else {
-            m->svf.SetDrive(value * 10.0f);
+            m->svf.SetDrive(value);
         }
     }
 

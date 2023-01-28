@@ -140,6 +140,7 @@ namespace sns {
 	constexpr Parameter ParameterFilterCutoff = 2;
 	constexpr Parameter ParameterFilterResonance = 3;
 	constexpr Parameter ParameterFilterDrive = 4;
+	constexpr Parameter ParameterFilterTrack = 5;
 
 
 	constexpr Parameter ParameterCount = ParameterFilterBase + ParameterFilterCount * ParameterFilterParameters;

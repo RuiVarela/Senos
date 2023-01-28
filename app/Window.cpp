@@ -357,12 +357,14 @@ namespace sns {
 		}
 	}
 
-	void Window::pBool(Parameter param, std::string name) {
+	bool Window::pBool(Parameter param, std::string name) {
 		bool value = int(m_values[param]) == 1;
 		if (ImGui::Checkbox(name.c_str(), &value)) {
 			m_values[param] = float(value);
 			applyInstrumentValues();
+			return true;
 		}
+		return false;
 	}
 
 	void Window::pTableCheck(Parameter param, float spacing) {

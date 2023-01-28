@@ -105,7 +105,7 @@ namespace sns {
 		void pCombo(std::string const& name, Parameter param, std::vector<std::string> const& values);
 		bool pCombo(std::string const& name, std::vector<std::string> const& values, int& index);
 
-		void pBool(Parameter param, std::string name);
+		bool pBool(Parameter param, std::string name);
 
 		void pTableCheck(Parameter param, float spacing = 0.0f);
 		void pTableDragInt(Parameter param, int min = 0, int max = 99);

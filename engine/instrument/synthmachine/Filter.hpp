@@ -28,6 +28,7 @@ namespace sns {
 
         void reset();
 
+        //hz
         void setCutoff(float value);
         float cutoff() const;
 

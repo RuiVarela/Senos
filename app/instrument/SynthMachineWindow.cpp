@@ -155,6 +155,14 @@ namespace sns {
 		ImGui::Text("Kind");
 		ImGui::PushItemWidth(ImGui::GetFontSize() * 5.5f);
 		pCombo("##Kind", parameter_base + ParameterFilterKind, Filter::kindNames());
+
+		if(pBool(parameter_base + ParameterFilterTrack, "Track")) {
+			// if we enable track, lets set the cutoff at the center
+			if (m_values[parameter_base + ParameterFilterTrack] > 0.0f) {
+				m_values[parameter_base + ParameterFilterCutoff] = 0.5f;
+				applyInstrumentValues();
+			}
+		}
 		ImGui::PopItemWidth();
 		ImGui::EndGroup();
 	}
