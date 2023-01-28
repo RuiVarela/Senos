@@ -34,6 +34,7 @@ namespace sns {
 
 		m_filter_cutoff = 1.0f;
 		m_filter_resonance = 0.0f;
+		m_filter_drive = 0.0f;
 
 		m_emitter_counter = 0;
 
@@ -85,6 +86,7 @@ namespace sns {
 			values[base + ParameterFilterKind] = int(Filter::Kind::Off);
 			values[base + ParameterFilterCutoff] = 1.0f;
 			values[base + ParameterFilterResonance] = 0.0f;
+			values[base + ParameterFilterDrive] = 0.0f;
 		}
 
 
@@ -156,6 +158,8 @@ namespace sns {
 					break;
 				case ParameterFilterResonance:
 					m_filter_resonance.changeWithIncrement(value, FILTER_RAMP_INCREMENT);
+				case ParameterFilterDrive:
+					m_filter_drive.changeWithIncrement(value, FILTER_RAMP_INCREMENT);
 					break;
 				case ParameterFilterKind:
 					m_filter.setKind(Filter::Kind(int(value)));
@@ -281,6 +285,7 @@ namespace sns {
 
 		m_filter.setCutoff(m_filter_cutoff.next());
 		m_filter.setResonance(m_filter_resonance.next());
+		m_filter.setDrive(m_filter_drive.next());
 
 
 		float machine_sample = 0.0;

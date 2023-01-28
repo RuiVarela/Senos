@@ -107,6 +107,7 @@ namespace sns {
 				case ParameterFilterKind: return sfmt("FilterKind_%d", class_index);
 				case ParameterFilterCutoff: return sfmt("FilterCutoff_%d", class_index);
 				case ParameterFilterResonance: return sfmt("FilterResonance_%d", class_index);
+				case ParameterFilterDrive: return sfmt("FilterDrive_%d", class_index);
 				}
 
 			}

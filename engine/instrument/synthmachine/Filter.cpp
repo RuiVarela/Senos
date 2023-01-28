@@ -3,99 +3,6 @@
 
 namespace sns {
 
-    //
-    // Moog ladder filter module
-    // Ported from soundpipe
-    // Original author(s) : Victor Lazzarini, John ffitch (fast tanh), Bob Moog
-    //
-    struct Moog {
-        Moog() {
-            Reset();
-        }
-
-        void Reset() {
-            sample_rate_ = float(SampleRate);
-            istor_ = 0.0f;
-            res_ = 0.4f;
-            freq_ = 1000.0f;
-
-            for (int i = 0; i < 6; i++) {
-                delay_[i] = 0.0;
-                tanhstg_[i % 3] = 0.0;
-            }
-
-            old_freq_ = 0.0f;
-            old_res_ = -1.0f;
-            old_acr_ = 0.0f;
-            old_tune_ = 0.0f;
-        }
-
-        float process(float in) {
-            float  freq = freq_;
-            float  res  = res_;
-            float  res4;
-            float* delay   = delay_;
-            float* tanhstg = tanhstg_;
-            float  stg[4];
-            float  acr, tune;
-
-            float THERMAL = 0.000025f;
-
-            if(res < 0) {
-                res = 0;
-            }
-
-            if(old_freq_ != freq || old_res_ != res)
-            {
-                float f, fc, fc2, fc3, fcr;
-                old_freq_ = freq;
-                fc        = (freq / sample_rate_);
-                f         = 0.5f * fc;
-                fc2       = fc * fc;
-                fc3       = fc2 * fc2;
-
-                fcr  = 1.8730f * fc3 + 0.4955f * fc2 - 0.6490f * fc + 0.9988f;
-                acr  = -3.9364f * fc2 + 1.8409f * fc + 0.9968f;
-                tune = (1.0f - expf(-((2 * PI) * f * fcr))) / THERMAL;
-
-                old_res_  = res;
-                old_acr_  = acr;
-                old_tune_ = tune;
-            }
-            else
-            {
-                res  = old_res_;
-                acr  = old_acr_;
-                tune = old_tune_;
-            }
-
-            res4 = 4.0f * res * acr;
-
-            for(int j = 0; j < 2; j++)
-            {
-                in -= res4 * delay[5];
-                delay[0] = stg[0]
-                    = delay[0] + tune * (tanh(in * THERMAL) - tanhstg[0]);
-                for(int k = 1; k < 4; k++)
-                {
-                    in     = stg[k - 1];
-                    stg[k] = delay[k]
-                            + tune
-                                * ((tanhstg[k - 1] = tanh(in * THERMAL))
-                                    - (k != 3 ? tanhstg[k]
-                                                : tanh(delay[k] * THERMAL)));
-                    delay[k] = stg[k];
-                }
-                delay[5] = (stg[3] + delay[4]) * 0.5f;
-                delay[4] = stg[3];
-            }
-            return delay[5];
-        }
-
-
-        float istor_, res_, freq_, delay_[6], tanhstg_[3], old_freq_, old_res_, sample_rate_, old_acr_, old_tune_;
-    };
-
     // from daisydsp
     struct StateVariableFilter {
 
@@ -193,7 +100,6 @@ namespace sns {
     // Filter Class
     //
     struct Filter::PrivateImplementation {
-        Moog moog;
         StateVariableFilter svf;
     };
 
@@ -202,8 +108,6 @@ namespace sns {
         {
         case Filter::Kind::Off:
             return "Off";
-        case Filter::Kind::Moog:
-            return "Moog";
         case Filter::Kind::Lowpass:
             return "Lowpass";
         case Filter::Kind::Bandpass:
@@ -222,7 +126,7 @@ namespace sns {
     }
 
     Filter::Filter(Kind kind)
-        :m(std::make_shared<PrivateImplementation>()), m_kind(Kind::Off), m_cutoff(1.0f), m_resonance(0.0f)
+        :m(std::make_shared<PrivateImplementation>()), m_kind(Kind::Off), m_cutoff(1.0f), m_resonance(0.0f), m_drive(0.0f)
     {
         setKind(kind);
     }
@@ -236,6 +140,7 @@ namespace sns {
     Filter::Kind Filter::kind() const { return m_kind; }
     float Filter::cutoff() const { return m_cutoff; }
     float Filter::resonance() { return m_resonance; }
+    float Filter::drive() { return m_drive; }
 
     void Filter::setKind(Kind kind) {
         if (m_kind == kind) return;
@@ -245,15 +150,13 @@ namespace sns {
 
         if (m_kind == Kind::Off) {
 
-        } else if (m_kind == Kind::Moog) {
-            m->moog.Reset();
-        }
-        else {
+        } else {
             m->svf.Reset();
         }
 
         setCutoff(m_cutoff);
         setResonance(m_resonance);
+        setDrive(m_drive);
         m_force_update = false;
     }
 
@@ -269,11 +172,7 @@ namespace sns {
 
         if (m_kind == Kind::Off) {
             return;
-        } else if (m_kind == Kind::Moog) {
-            constexpr float max_frequency = 7000.0f;
-            float frequency = easeInQuad(value) * max_frequency;
-            m->moog.freq_ = frequency;
-        }  else {
+        } else {
             constexpr float max = float(SampleRate) / 3.0f;
             float frequency = easeInQuad(value) * max;
             m->svf.SetFreq(frequency);
@@ -286,19 +185,25 @@ namespace sns {
 
         if (m_kind == Kind::Off) {
             return;
-        } else if (m_kind == Kind::Moog) {
-            m->moog.res_ = value * 0.95f; // 0.95 is to avoid audio explosions
         } else {
-            m->svf.SetDrive(10.0f);
-            m->svf.SetRes(clampTo(value, 0.01f, 0.99f));
+            m->svf.SetRes(value);
+        }
+    }
+
+    void Filter::setDrive(float value) {
+        if (equivalent(m_drive, value) && !m_force_update) return;
+        m_drive = value;
+
+        if (m_kind == Kind::Off) {
+            return;
+        } else {
+            m->svf.SetDrive(value * 10.0f);
         }
     }
 
     float Filter::next(float input) {
         if (m_kind == Kind::Off) {
             return input;
-        } else if (m_kind == Kind::Moog) {
-            return m->moog.process(input);
         } else {
             m->svf.Process(input);
 

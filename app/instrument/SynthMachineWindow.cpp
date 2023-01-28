@@ -144,14 +144,16 @@ namespace sns {
 
 		pKnob("Cutoff", parameter_base + ParameterFilterCutoff);
 		ImGui::SameLine();
-		pKnob("Resonance", parameter_base + ParameterFilterResonance);
+		pKnob("Res.", parameter_base + ParameterFilterResonance);
+		ImGui::SameLine();
+		pKnob("Drive", parameter_base + ParameterFilterDrive);
 
-		ImGui::SameLine(0.0f, ImGui::GetFontSize() * 2.0f);
+		ImGui::SameLine();
 
 		ImGui::BeginGroup();
 		ImGui::GetCurrentWindow()->DC.CurrLineTextBaseOffset = 0;
 		ImGui::Text("Kind");
-		ImGui::PushItemWidth(ImGui::GetFontSize() * 6.6f);
+		ImGui::PushItemWidth(ImGui::GetFontSize() * 5.5f);
 		pCombo("##Kind", parameter_base + ParameterFilterKind, Filter::kindNames());
 		ImGui::PopItemWidth();
 		ImGui::EndGroup();

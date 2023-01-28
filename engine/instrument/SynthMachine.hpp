@@ -53,6 +53,7 @@ namespace sns {
 		Filter m_filter;
 		Value m_filter_cutoff;
 		Value m_filter_resonance;
+		Value m_filter_drive;
 
 		bool m_mono;
 		Value m_portamento;

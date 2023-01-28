@@ -9,7 +9,6 @@ namespace sns {
 
         enum class Kind {
             Off,
-            Moog,
             Lowpass,
             Bandpass,
             Highpass,
@@ -18,7 +17,7 @@ namespace sns {
             Count
         };
 
-		Filter(Kind kind = Kind::Moog);
+		Filter(Kind kind = Kind::Lowpass);
 
         std::string toString() const;
 
@@ -35,6 +34,9 @@ namespace sns {
         void setResonance(float value);
         float resonance();
 
+        void setDrive(float value);
+        float drive();
+
         float next(float input);
     private:
         struct PrivateImplementation;
@@ -43,6 +45,7 @@ namespace sns {
         Kind m_kind;
         float m_cutoff;
         float m_resonance;
+        float m_drive;
         bool m_force_update;
 	};
 
