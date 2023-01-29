@@ -121,7 +121,7 @@ namespace sns {
 				continue;
 
 			if (m_do_log)
-				Log::i(TAG, sfmt("Updating value [%s] [%.3f] -> [%.3f]", parameterToString(parameter), previous, value));
+				Log::d(TAG, sfmt("Updating value [%s] [%.3f] -> [%.3f]", parameterToString(parameter), previous, value));
 
 			Parameter class_parameter;
 			int class_index = 0;

@@ -43,7 +43,13 @@ namespace sns
 	Log::Log()
 		:m_filename("app.log"),
 		m_max_file_size(150 * 1024 * 1024),
-		m_message_count(0)
+		m_message_count(0),
+#ifdef NDEBUG
+		m_level(LogLevel::Info)
+#else
+ 		m_level(LogLevel::Debug)
+#endif
+
 	{
 		setSleepMs(15);
 	}
@@ -60,7 +66,19 @@ namespace sns
 		m_filename = filename;
 	}
 
+	void Log::setLeveL(LogLevel level) {
+		m_level = level;
+	}
+
+	LogLevel Log::level() const {
+		return m_level;
+	}
+
 	void Log::log(LogLevel level, std::string const &tag, std::string const &message) {
+
+		if (level < m_level) 
+			return;
+
 		Message m;
 		m.level = level;
 		m.tag = tag;

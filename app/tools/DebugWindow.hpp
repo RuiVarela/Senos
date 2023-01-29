@@ -13,8 +13,6 @@ namespace sns {
 		void initialize() override;
 		void shutdown() override;
 
-		void dumpTests();
-
 		void render() override;
 
 		void clearLog();
@@ -24,5 +22,8 @@ namespace sns {
 		std::shared_ptr<PrivateImplementation> m;
 
 		void renderLog();
+
+		void showNotesNames();
+		void showNotesFrequencies();
 	};
 }

@@ -115,17 +115,46 @@ namespace sns {
 			ImGui::Text("Keys %s", keys.str().c_str());
 		}
 
+		{
+			if (ImGui::Button("Tasks"))
+				ImGui::OpenPopup("select_tasks");
 
-		if (ImGui::Button("Geometry"))
-			Log::d(TAG, sfmt("Width: %d Height: %d dpi_scale: %.1f font_size: %.1f", app()->width(), app()->height(), app()->dpiScale(), ImGui::GetFontSize()));
+			if (ImGui::BeginPopup("select_tasks")){
 
-		ImGui::SameLine();
-		if (ImGui::Button("Data Folder"))
-			platformShellOpen(rootFolder());
+				if (ImGui::Button("Open Data Folder"))
+					platformShellOpen(rootFolder());
 
-		ImGui::SameLine();
-		if (ImGui::Button("ImGui"))
-			m->show_imgui_demo_window = !m->show_imgui_demo_window;
+				if (ImGui::Button("Geometry"))
+					Log::d(TAG, sfmt("Width: %d Height: %d dpi_scale: %.1f font_size: %.1f", app()->width(), app()->height(), app()->dpiScale(), ImGui::GetFontSize()));
+#ifndef NDEBUG
+				if (ImGui::Button("ImGui"))
+					m->show_imgui_demo_window = !m->show_imgui_demo_window;
+#endif
+				if (ImGui::Button("Show Notes Names"))
+					showNotesNames();
+
+				if (ImGui::Button("Show Notes Frequencies"))
+					showNotesFrequencies();
+
+				ImGui::EndPopup();
+			}
+		}
+
+		// logs
+		{
+			ImGui::SameLine();
+			int level = int(Log::logger().level());
+			const char *items[] = {"Debug", "Info", "Warning", "Error"};
+			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 5.0f);
+			if (ImGui::BeginCombo("Log", items[level], 0)) {
+				for (int n = 0; n < IM_ARRAYSIZE(items); n++) {
+					const bool is_selected = (level == n);
+					if (ImGui::Selectable(items[n], is_selected)) 
+						Log::logger().setLeveL(LogLevel(n));
+				}
+				ImGui::EndCombo();
+			}
+		}
 
 
 		renderLog();
@@ -255,29 +284,20 @@ namespace sns {
 
 	}
 
-	void DebugWindow::dumpTests() {
-
-		//
-		// Names and alternative names
-		//
-		if (false) {
-			std::stringstream names0;
-			std::stringstream names1;
-			for (int key = 0; key != 12; ++key) {
-				names0 << noteName(key, false, false) << " ";
-				names1 << noteName(key, false, true) << " ";
-			}
-
-			Log::i(TAG, sfmt("Notes: %s", names0.str()));
-			Log::i(TAG, sfmt("Notes: %s", names1.str()));
+	void DebugWindow::showNotesNames() {
+		std::stringstream names0;
+		std::stringstream names1;
+		for (int key = 0; key != 12; ++key) {
+			names0 << noteName(key, false, false) << " ";
+			names1 << noteName(key, false, true) << " ";
 		}
 
-		//
-		// Frequencies
-		//
-		if (false) {
-			for (int i = 0; i != TotalNotes; ++i)
-				Log::i(TAG, sfmt("midi=%d name=%s frequency=%.2f", i, noteName(i, true), noteFrequency(i)));
-		}
+		Log::i(TAG, sfmt("Notes: %s", names0.str()));
+		Log::i(TAG, sfmt("Notes: %s", names1.str()));
+	}
+	
+	void DebugWindow::showNotesFrequencies() {
+		for (int i = 0; i != TotalNotes; ++i)
+			Log::i(TAG, sfmt("midi=%d name=%s frequency=%.2f", i, noteName(i, true), noteFrequency(i)));
 	}
 }

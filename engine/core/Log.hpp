@@ -34,6 +34,9 @@ namespace sns
 		void setWindowHandler(Handler handler);
 		void setFilename(std::string filename);
 
+		void setLeveL(LogLevel level);
+		LogLevel level() const;
+
 	protected:
 		void workStep() override;
 		void preWork() override;
@@ -43,6 +46,7 @@ namespace sns
 		Log();
 		~Log() override;
 
+		LogLevel m_level;
 		Handler m_window_handler;
 		std::string m_filename;
 		uint64_t m_max_file_size;

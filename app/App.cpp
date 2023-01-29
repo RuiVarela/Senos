@@ -215,8 +215,6 @@ namespace sns {
 		Log::logger().setFilename(mergePaths(rootFolder(), "app.log"));
 		Log::logger().startWorking();
 
-		getWindow<DebugWindow>()->dumpTests();
-
 		if (m_configuration.runs == 0)
 			windowLayoutPlay();
 
@@ -628,7 +626,10 @@ namespace sns {
 	void App::windowLayoutCascade() {
 		float counter = 0.0f;
 
-		float y_offset = ImGui::GetFrameHeight();
+		float y_offset = 0.0f;
+		if (shouldRenderMenu())
+			y_offset += ImGui::GetFrameHeight();
+
 		float spacing = ImGui::GetFrameHeight() * 1.5f;
 
 		auto windows = m_windows;

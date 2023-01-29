@@ -267,7 +267,7 @@ namespace sns {
 			}
 
 			if ((changed || controllers_changed) && m->do_log) {
-				Log::i(TAG, sfmt("Updating value [%s] -> [%.3f]", parameterToString(p), iv));
+				Log::d(TAG, sfmt("Updating value [%s] -> [%.3f]", parameterToString(p), iv));
 			}
 		}
 
@@ -428,9 +428,11 @@ namespace sns {
 			if (m->voices[note].midi_note == midinote && m->voices[note].keydown)
 				break;
 
-		// note not found ?
+		// note not found
 		if (note >= max_active_notes) {
-			Log::i(TAG, sfmt("Note released not found value [%d]", midinote));
+			if (!m->mono) {
+				Log::w(TAG, sfmt("Note released not found value [%d]", midinote));
+			}
 			return;
 		}
 

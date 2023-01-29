@@ -108,7 +108,7 @@ namespace sns {
 				continue;
 
 			if (m->do_log)
-				Log::i(TAG, sfmt("Updating value [%s] [%.3f] -> [%.3f]", parameterToString(parameter), previous, value));
+				Log::d(TAG, sfmt("Updating value [%s] [%.3f] -> [%.3f]", parameterToString(parameter), previous, value));
 
 
 			if (parameter == ParameterTuning) {
