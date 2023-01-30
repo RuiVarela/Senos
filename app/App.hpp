@@ -98,5 +98,7 @@ namespace sns {
 		std::string m_load_project;
 		std::string m_clone_project;
 		std::string m_import_project_file;
+
+		friend 	Configuration migrateApp(App* app, Configuration cfg, int from, int to);
 	};
 }

@@ -161,6 +161,8 @@ endif()
 set(APP_FILES
     main.cpp
     app/assets/icon.cpp
+    app/assets/startup.cpp
+    
     app/Configuration.cpp
 	app/Configuration.hpp
     app/App.cpp

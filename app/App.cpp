@@ -215,9 +215,6 @@ namespace sns {
 		Log::logger().setFilename(mergePaths(rootFolder(), "app.log"));
 		Log::logger().startWorking();
 
-		if (m_configuration.runs == 0)
-			windowLayoutPlay();
-
 		m_configuration.runs += 1;
 
 		buildMenu();

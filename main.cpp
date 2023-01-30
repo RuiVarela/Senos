@@ -200,10 +200,12 @@ sapp_desc sokol_main(int argc, char* argv[]) {
 
 	//sns::saveCppBinary(app_icon_256_data, sizeof(app_icon_256_data), "C:\\Users\\ruiva\\Desktop\\dump.cpp");
 
-	//std::vector<uint8_t> buffer;
-	//if (sns::readRawBinary("C:\\Users\\ruiva\\Desktop\\tmp\\drumkit.sf2", buffer)) {
-	//	sns::saveCppBinary(buffer.data(), buffer.size(), "C:\\Users\\ruiva\\Desktop\\tmp\\drumkit.cpp");
-	//}
+	// std::vector<uint8_t> buffer;
+	// if (sns::readRawBinary("/Users/ruivarela/projects/Senos/app/assets/startup.zip", buffer)) {
+	// 	sns::saveCppBinary(buffer.data(), buffer.size(), "/Users/ruivarela/projects/Senos/app/assets/startup.cpp");
+	// }
+
+
 
 	sapp_desc desc = { };
 	desc.window_title = "Senos";

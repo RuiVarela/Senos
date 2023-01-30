@@ -36,6 +36,7 @@ namespace sns {
 	std::string rootFolder();
 	void saveConfiguration(App* app, Configuration const& configuration);
 	Configuration loadConfiguration(App* app);
+	Configuration migrateApp(App* app, Configuration cfg, int from, int to);
 
 	std::vector<std::string> projectNames();
 	void deleteProject(std::string const& name);

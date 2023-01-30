@@ -31,10 +31,10 @@ constexpr int CONFIGURATION_VERSION = 2;
 
 constexpr auto TAG = "Configuration";
 
-
+const size_t startup_data_size = 14597;
+extern unsigned char startup_data[startup_data_size];
 
 namespace sns {
-
 	using json = nlohmann::json;
 
 	std::string rootFolder() {
@@ -118,15 +118,15 @@ namespace sns {
 		configuration.project_folder = mergePaths(rootFolder(), PROJECTS_FOLDER_NAME, configuration.project);
 
 		std::string path = mergePaths(rootFolder(), SETTINGS_FILENAME);
-		int version = CONFIGURATION_VERSION;
+		int version = 0;
 
 		std::ifstream in(path);
-		if (!in)
-			return configuration;
-
+		if (!in) 
+			return migrateApp(app, configuration, version, CONFIGURATION_VERSION);
+		
 		json data = json::parse(in);
 		if (data.empty())
-			return configuration;
+			return migrateApp(app, configuration, version, CONFIGURATION_VERSION);
 
 		if (data.contains("header")) {
 			json header = data["header"];
@@ -146,7 +146,6 @@ namespace sns {
 				configuration.project_folder = mergePaths(rootFolder(), PROJECTS_FOLDER_NAME, configuration.project);
 			}
 		}
-
 
 		if (data.contains("settings")) {
 			json settings = data["settings"];
@@ -193,7 +192,10 @@ namespace sns {
 			app->engine().midi().setMapping(configuration.midi);
 		}
 
-		return configuration;
+		if (version != CONFIGURATION_VERSION)
+			return migrateApp(app, configuration, version, CONFIGURATION_VERSION);
+		else 
+			return configuration;
 	}
 
 
@@ -782,4 +784,33 @@ namespace sns {
 		storeSave(configuration, StoreKind::Chain, name, processor);
 	}
 
+	//
+	// data migrations
+	//
+	void unpackStartupData(Configuration cfg) {
+			std::vector<uint8_t> source(startup_data_size);
+			memcpy(source.data(), startup_data, startup_data_size);
+
+			zip_file zip(source);
+			for (auto& member : zip.infolist()) {
+				std::string filename(member.filename);
+
+				//zip.read(member, data);
+
+				//saveBytes(filename, data);
+			}
+	}
+
+	Configuration migrateApp(App* app, Configuration cfg, int from, int to) {
+		if (app == nullptr)
+			return cfg;
+
+		if (from == 0) {
+			unpackStartupData(cfg);
+			app->windowLayoutPlay();
+		}
+			
+
+		return cfg;
+	}
 }
