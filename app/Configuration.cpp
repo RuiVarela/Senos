@@ -787,18 +787,24 @@ namespace sns {
 	//
 	// data migrations
 	//
-	void unpackStartupData(Configuration cfg) {
-			std::vector<uint8_t> source(startup_data_size);
-			memcpy(source.data(), startup_data, startup_data_size);
+	void unpackAssetsData(Configuration cfg) {
+		std::vector<uint8_t> source(startup_data_size);
+		memcpy(source.data(), startup_data, startup_data_size);
 
-			zip_file zip(source);
-			for (auto& member : zip.infolist()) {
-				std::string filename(member.filename);
+		zip_file zip(source);
+		std::vector<uint8_t> data;
+		for (auto &member : zip.infolist()) {
+			std::string filename(member.filename);
+			if (member.file_size == 0)
+				continue;
 
-				//zip.read(member, data);
+			zip.read(member, data);
 
-				//saveBytes(filename, data);
-			}
+			std::string destination = mergePaths(rootFolder(), filename);
+			makeDirectoryForFile(destination);
+			writeRawBinary(destination, data);
+			Log::d(TAG, sfmt("Wrote File [%s] -> [%s]", filename, destination));
+		}
 	}
 
 	Configuration migrateApp(App* app, Configuration cfg, int from, int to) {
@@ -806,7 +812,7 @@ namespace sns {
 			return cfg;
 
 		if (from == 0) {
-			unpackStartupData(cfg);
+			unpackAssetsData(cfg);
 			app->windowLayoutPlay();
 		}
 			
