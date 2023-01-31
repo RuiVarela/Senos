@@ -10,6 +10,7 @@ namespace sns {
 
 	constexpr char LastSessionName[] = "last session";
 	constexpr char DefaultSessionName[] = "default";
+	constexpr int ConfigurationVersion = 2;
 
 	//constexpr auto PackExtension = "tar";
 	constexpr auto PackExtension = "zip";

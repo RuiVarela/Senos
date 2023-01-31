@@ -164,6 +164,8 @@ set(APP_FILES
     app/assets/startup.cpp
     
     app/Configuration.cpp
+    app/ConfigurationMigrations.cpp
+    app/ConfigurationPresets.cpp
 	app/Configuration.hpp
     app/App.cpp
 	app/App.hpp
