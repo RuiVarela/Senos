@@ -191,7 +191,7 @@ namespace sns {
 		names.push_back(DefaultSessionName);
 
 		std::string path = mergePaths(rootFolder(), PROJECTS_FOLDER_NAME);
-		auto contents = getDirectoryContents(path);
+		auto contents = getDirectoryContents(path, DirectorySorting::DirectorySortingAlphabetical);
 		for (auto current : contents) {
 			if (fileType(mergePaths(path, current)) != FileType::FileDirectory)
 				continue;

@@ -31,7 +31,7 @@ namespace sns {
 	};
 
 	static void storeGatherJsonFolder(std::string const& path, std::vector<std::string>& names) {
-		auto contents = getDirectoryContents(path);
+		auto contents = getDirectoryContents(path, DirectorySorting::DirectorySortingAlphabetical);
 		for (auto current : contents) {
 			if (getFileExtension(current) != "json")
 				continue;

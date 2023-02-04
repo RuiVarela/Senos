@@ -241,7 +241,7 @@ namespace sns {
 				m_cfg_updated = true;
 			}
 			ImGui::PopButtonRepeat();
-			m_cfg.step_count = clampTo(m_cfg.step_count, 2, 40);
+			m_cfg.step_count = clampTo(m_cfg.step_count, 2, 64);
 		}
 
 	}
