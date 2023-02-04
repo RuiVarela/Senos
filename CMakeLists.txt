@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
 project(Senos)
 
-set(VERSION_MAJOR 0)
-set(VERSION_MINOR 1)
-set(VERSION_BUILD 23)
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 2)
+set(VERSION_BUILD 25)
 
 add_compile_definitions(VERSION_MAJOR=${VERSION_MAJOR})
 add_compile_definitions(VERSION_MINOR=${VERSION_MINOR})

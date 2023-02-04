@@ -9,7 +9,12 @@ constexpr auto TAG = "Configuration";
 
 //zip -d startup.zip "__MACOSX*"
 //zip -d startup.zip "*/.DS_Store"
-const size_t startup_data_size = 14597;
+
+// std::vector<uint8_t> buffer;
+// if (sns::readRawBinary("/Users/ruivarela/projects/Senos/app/assets/startup.zip", buffer)) {
+// 	sns::saveCppBinary(buffer.data(), buffer.size(), "/Users/ruivarela/projects/Senos/app/assets/startup.cpp");
+// }
+const size_t startup_data_size = 20450;
 extern unsigned char startup_data[startup_data_size];
 
 namespace sns {
