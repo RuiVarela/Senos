@@ -3,7 +3,7 @@ project(Senos)
 
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 2)
-set(VERSION_BUILD 25)
+set(VERSION_BUILD 26)
 
 add_compile_definitions(VERSION_MAJOR=${VERSION_MAJOR})
 add_compile_definitions(VERSION_MINOR=${VERSION_MINOR})
@@ -17,7 +17,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Windows)
 endif()
 
 #
-#=== LIBRARY: engine
+# LIBRARY: engine
 #
 set(ENGINE_FILES
     engine/core/Lang.cpp
@@ -144,7 +144,7 @@ set(ENGINE_FILES
     vendor/tsf/tsf.h
 )
 
-#== organize in folders for VS
+# organize in folders for VS
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ENGINE_FILES}) 
 
 add_library(engine STATIC ${ENGINE_FILES})
@@ -156,7 +156,7 @@ endif()
 
 
 #
-#=== App
+# App
 #
 set(APP_FILES
     main.cpp
@@ -293,7 +293,7 @@ else()
     # 
 endif()
 
-#== organize in folders for VS
+# organize in folders for VS
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${APP_FILES})
 
 

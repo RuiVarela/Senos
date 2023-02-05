@@ -186,6 +186,10 @@ static void cleanup(void) {
 
 static void event(const sapp_event* event) {
 	simgui_handle_event(event);
+	
+	//if (event->type == sapp_event_type::SAPP_EVENTTYPE_MOUSE_MOVE)
+	//	return;
+	//sns::Log::d("sokol", sns::sfmt("%d", event->type));
 }
 
 sapp_desc sokol_main(int argc, char* argv[]) {
