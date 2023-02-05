@@ -2,7 +2,12 @@
 Senos is sound exploration tool from a developer point of view.   
 It is very lightweight, can be used as a toy or a minimal song composer.
 
-Features:
+Play Setup | Instruments | Sequencer | Chainer
+:---------:|:-----------:|:---------:|:---------:
+![Play](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/00.png) | ![Instruments](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/01.png) | ![Sequencer](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/02.png) | ![Chainer](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/03.png)
+
+
+## Features
 - 4 playable instruments
   - SynthMachine, a minimal synthesizer
   - Dx7 FM synthesizer
@@ -12,6 +17,8 @@ Features:
 - Chainer (sequencer chaining)
 - Software keyboard 
 - Midi Support
+- Wav Recording
+- Projects minimal management
 
 ## Development
 ```bash
