@@ -9,6 +9,7 @@
 #include "../vendor/sokol/util/sokol_imgui.h"
 
 #include "app/App.hpp"
+#include "app/Platform.hpp"
 #include "engine/core/Log.hpp"
 
 #include <thread>
@@ -21,6 +22,10 @@ static int64_t app_last_render_checkpoint = 0;
 static sg_image app_font_image;
 static bool app_font_initialized;
 static sg_pass_action pass_action;
+
+static bool audio_initialized;
+static std::vector<sns::PlatformEvent> platform_events;
+static std::mutex platform_events_mutex;
 
 
 static void destroyFonts() {
@@ -93,8 +98,34 @@ static void audio_callback(float* buffer, int num_frames, int num_channels) {
 	app.engine().fill(buffer, num_frames, num_channels);
 }
 
+static void destroyAudio() {
+	if (audio_initialized) 
+		saudio_shutdown();
+	
+	audio_initialized = false;
+}
+
+static void restartAudio() {
+	destroyAudio();
+
+	//
+	// Audio
+	//
+	saudio_desc audio_des{};
+	audio_des.sample_rate = sns::SampleRate;
+	audio_des.num_channels = 1;
+	audio_des.stream_cb = audio_callback;
+	audio_des.buffer_frames = app.configuration().audio_buffer_size;
+	saudio_setup(audio_des);
+
+	assert(sns::SampleRate == saudio_sample_rate());
+	assert(1 == saudio_channels());
+	audio_initialized = true;
+}
+
 static void init(void) {
 	app_font_initialized = false;
+	audio_initialized = false;
 
 	// setup sokol-gfx and sokol-time
 	sg_desc desc = { };
@@ -119,18 +150,27 @@ static void init(void) {
 	//
 	app.initialize();
 
-	//
-	// Audio
-	//
-	saudio_desc audio_des{};
-	audio_des.sample_rate = sns::SampleRate;
-	audio_des.num_channels = 1;
-	audio_des.stream_cb = audio_callback;
-	audio_des.buffer_frames = app.configuration().audio_buffer_size;
-	saudio_setup(audio_des);
+	restartAudio();
 
-	assert(sns::SampleRate == saudio_sample_rate());
-	assert(1 == saudio_channels());
+	sns::platformRegisterCallback([](sns::PlatformEvent event){
+		std::unique_lock<std::mutex> lock(platform_events_mutex);
+		platform_events.push_back(event);
+	});
+}
+
+static void dispatchPlatformEvent(sns::PlatformEvent const event) {
+	if (event == sns::PlatformEvent::Wakeup) {
+		sns::Log::d("main", "Power wakeup");
+		restartAudio();
+	}
+}
+
+static void dispatchSokolEvent(sapp_event const* event) {
+	simgui_handle_event(event);
+	
+	//if (event->type == sapp_event_type::SAPP_EVENTTYPE_MOUSE_MOVE)
+	//	return;
+	//sns::Log::d("sokol", sns::sfmt("%d", event->type));
 }
 
 static void frame(void) {
@@ -139,6 +179,14 @@ static void frame(void) {
 
 	if (width <= 1 || height <= 1) {
 		return;
+	}
+
+	//dispatch platform events
+	{
+		std::unique_lock<std::mutex> lock(platform_events_mutex);
+		for (auto const& current : platform_events)
+			dispatchPlatformEvent(current);
+		platform_events.clear();
 	}
 
 
@@ -173,8 +221,12 @@ static void frame(void) {
 	}
 }
 
+
+
 static void cleanup(void) {
-	saudio_shutdown();
+	sns::platformClearCallbacks();
+
+	destroyAudio();
 
 	app.cleanup();
 
@@ -184,13 +236,7 @@ static void cleanup(void) {
 	sg_shutdown();
 }
 
-static void event(const sapp_event* event) {
-	simgui_handle_event(event);
-	
-	//if (event->type == sapp_event_type::SAPP_EVENTTYPE_MOUSE_MOVE)
-	//	return;
-	//sns::Log::d("sokol", sns::sfmt("%d", event->type));
-}
+
 
 sapp_desc sokol_main(int argc, char* argv[]) {
 	(void)argc;
@@ -211,7 +257,7 @@ sapp_desc sokol_main(int argc, char* argv[]) {
 	desc.init_cb = init;
 	desc.frame_cb = frame;
 	desc.cleanup_cb = cleanup;
-	desc.event_cb = event;
+	desc.event_cb = dispatchSokolEvent;
 
 	desc.width = configuration.window_width;
 	desc.height = configuration.window_height;

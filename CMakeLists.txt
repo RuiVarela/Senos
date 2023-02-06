@@ -3,7 +3,7 @@ project(Senos)
 
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 2)
-set(VERSION_BUILD 26)
+set(VERSION_BUILD 27)
 
 add_compile_definitions(VERSION_MAJOR=${VERSION_MAJOR})
 add_compile_definitions(VERSION_MINOR=${VERSION_MINOR})
@@ -282,6 +282,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
 
         "-framework CoreAudio"
         "-framework CoreMIDI"
+
+        "-framework IOKit"
         )
 else()
 

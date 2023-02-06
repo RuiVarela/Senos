@@ -204,4 +204,12 @@ namespace sns {
 	void platformFullscreenChanged(bool on) {
 
 	}
+
+	void platformRegisterCallback(PlatformEventCallback callback) {
+
+    }
+
+	void platformClearCallbacks() {
+		
+    }
 }
