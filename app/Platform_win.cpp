@@ -152,8 +152,20 @@ namespace sns {
 	//https://github.com/grassator/win32-window-custom-titlebar/blob/main/main.c
 
 	static WNDPROC g_original_winproc = 0;
-	static int g_min_w = 0;
-	static int g_min_h = 0;
+
+
+	//
+    // Singleton
+    //
+    struct PlatformSingleton {
+        static int min_w = 0;
+		static int min_h = 0;
+    };
+
+    static PlatformSingleton& platform() {
+        static PlatformSingleton singleton;
+        return singleton;
+    }
 
 	static int win32DpiScale(int value, UINT dpi) {
 		return (int)((float)value * (float)dpi / float(96));
@@ -167,10 +179,12 @@ namespace sns {
 		LRESULT result = 0;
 		bool call_default = true;
 
+		PlatformSingleton& p = platform();
+
 		if (message == WM_GETMINMAXINFO) {
 			MINMAXINFO* min_max_info = reinterpret_cast<MINMAXINFO*>(lParam);
-			min_max_info->ptMinTrackSize.x = win32DpiScale(g_min_w, GetDpiForWindow(hWnd));
-			min_max_info->ptMinTrackSize.y = win32DpiScale(g_min_h, GetDpiForWindow(hWnd));
+			min_max_info->ptMinTrackSize.x = win32DpiScale(p.min_w, GetDpiForWindow(hWnd));
+			min_max_info->ptMinTrackSize.y = win32DpiScale(p.min_h, GetDpiForWindow(hWnd));
 		}
 
 		// Winproc worker for the rest of the application.
@@ -210,6 +224,6 @@ namespace sns {
     }
 
 	void platformClearCallbacks() {
-		
+
     }
 }
