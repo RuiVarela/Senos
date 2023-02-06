@@ -16,6 +16,8 @@
 
 extern unsigned char app_icon_256_data[256 * 256 * 4 + 1];
 
+constexpr char TAG[] = "main";
+
 static sns::App app;
 static int64_t app_last_render_checkpoint = 0;
 
@@ -98,15 +100,17 @@ static void audio_callback(float* buffer, int num_frames, int num_channels) {
 	app.engine().fill(buffer, num_frames, num_channels);
 }
 
-static void destroyAudio() {
+static void destroyAudioBackend() {
 	if (audio_initialized) 
 		saudio_shutdown();
 	
 	audio_initialized = false;
 }
 
-static void restartAudio() {
-	destroyAudio();
+void restartAudioBackend() {
+	destroyAudioBackend();
+
+	sns::Log::d(TAG, "Starting audio...");
 
 	//
 	// Audio
@@ -150,7 +154,7 @@ static void init(void) {
 	//
 	app.initialize();
 
-	restartAudio();
+	restartAudioBackend();
 
 	sns::platformRegisterCallback([](sns::PlatformEvent event){
 		std::unique_lock<std::mutex> lock(platform_events_mutex);
@@ -160,8 +164,8 @@ static void init(void) {
 
 static void dispatchPlatformEvent(sns::PlatformEvent const event) {
 	if (event == sns::PlatformEvent::Wakeup) {
-		sns::Log::d("main", "Power wakeup");
-		restartAudio();
+		sns::Log::d(TAG, "Power wakeup");
+		restartAudioBackend();
 	}
 }
 
@@ -221,12 +225,10 @@ static void frame(void) {
 	}
 }
 
-
-
 static void cleanup(void) {
 	sns::platformClearCallbacks();
 
-	destroyAudio();
+	destroyAudioBackend();
 
 	app.cleanup();
 
@@ -235,8 +237,6 @@ static void cleanup(void) {
 	simgui_shutdown();
 	sg_shutdown();
 }
-
-
 
 sapp_desc sokol_main(int argc, char* argv[]) {
 	(void)argc;

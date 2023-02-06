@@ -9,7 +9,7 @@
 #include <fstream>
 #include <iostream>
 
-
+void restartAudioBackend();
 
 //static void fakeMidi(sns::Midi& midi, int k) {
 //    sns::MidiMessage m;
@@ -135,6 +135,9 @@ namespace sns {
 
 				if (ImGui::Button("Show Notes Frequencies"))
 					showNotesFrequencies();
+
+				if (ImGui::Button("Restart audio backend"))
+					restartAudioBackend();
 
 				ImGui::EndPopup();
 			}
