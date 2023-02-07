@@ -36,16 +36,16 @@ cmake --build .
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake -DCMAKE_BUILD_TYPE=MinSizeRel ..
 cmake --build . -- -j 8
-./Senos
 
 # Build a release version for mac with arm support
 cmake -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release .. 
 cmake --build . -- -j 8
+lipo -archs Senos.app/Contents/MacOS/Senos
 
 # To build a Release version on Windows with the VisualStudio toolchain:
 cmake ..
+cmake --build . --config Release
 cmake --build . --config MinSizeRel
-MinSizeRel\Senos.exe
 ```
 
 # Credits
