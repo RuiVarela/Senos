@@ -151,15 +151,17 @@ namespace sns {
 	//https://learn.microsoft.com/en-us/windows/win32/dwm/customframe#enabling-hit-testing-for-the-custom-frame
 	//https://github.com/grassator/win32-window-custom-titlebar/blob/main/main.c
 
-	static WNDPROC g_original_winproc = 0;
+
 
 
 	//
     // Singleton
     //
     struct PlatformSingleton {
-        static int min_w = 0;
-		static int min_h = 0;
+		std::vector<PlatformEventCallback> callbacks;
+        int min_w = 0;
+		int min_h = 0;
+		WNDPROC original_winproc = 0;
     };
 
     static PlatformSingleton& platform() {
@@ -185,21 +187,57 @@ namespace sns {
 			MINMAXINFO* min_max_info = reinterpret_cast<MINMAXINFO*>(lParam);
 			min_max_info->ptMinTrackSize.x = win32DpiScale(p.min_w, GetDpiForWindow(hWnd));
 			min_max_info->ptMinTrackSize.y = win32DpiScale(p.min_h, GetDpiForWindow(hWnd));
+		} 
+		
+		else if (message == WM_POWERBROADCAST) {
+			int32_t event = (int32_t)wParam;
+				switch (event) {
+				case PBT_APMSUSPEND: {
+					// Notifies applications that the computer is about to enter a suspended state.
+					// This event is typically broadcast when all applications and installable drivers have returned TRUE to a previous PBT_APMQUERYSUSPEND event.
+					//Log::d("Platform", "WM_POWERBROADCAST | PBT_APMSUSPEND");
+					for (auto const& callback : p.callbacks)
+						callback(PlatformEvent::Sleep);
+
+					break;
+				}  
+				case PBT_APMRESUMESUSPEND: {
+					// Notifies applications that the system has resumed operation after being suspended.
+					//Log::d("Platform", "WM_POWERBROADCAST | PBT_APMRESUMESUSPEND");
+					for (auto const& callback : p.callbacks)
+						callback(PlatformEvent::Wakeup);
+				} break;
+				case PBT_APMPOWERSTATUSCHANGE: {
+					// Notifies applications of a change in the power status of the computer, such as a switch from battery power to A/C. 
+					// The system also broadcasts this event when remaining battery power slips below the threshold specified by the user or if the battery power changes by a specified percentage.
+					//Log::d("Platform", "WM_POWERBROADCAST | PBT_APMPOWERSTATUSCHANGE");
+					break;
+				} 
+				case PBT_APMRESUMEAUTOMATIC: {
+					// Notifies applications that the system is resuming from sleep or hibernation. 
+					// This event is delivered every time the system resumes and does not indicate whether a user is present. 
+					//Log::d("Platform", "WM_POWERBROADCAST | PBT_APMRESUMEAUTOMATIC");
+					break;
+				} 
+			};
 		}
+
 
 		// Winproc worker for the rest of the application.
 		if (call_default)
-			result = CallWindowProc(g_original_winproc, hWnd, message, wParam, lParam);
+			result = CallWindowProc(p.original_winproc, hWnd, message, wParam, lParam);
 
 		return result;
 	}
 
 	void platformSetupWindow(int min_w, int min_h) {
-		g_min_w = min_w;
-		g_min_h = min_h;
+		PlatformSingleton& p = platform();
+
+		p.min_w = min_w;
+		p.min_h = min_h;
 
 		HWND hWnd = GetActiveWindow();
-		g_original_winproc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)PlatformWin_wndproc);
+		p.original_winproc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)PlatformWin_wndproc);
 
 
 		enableDarkMode(hWnd);
@@ -220,10 +258,13 @@ namespace sns {
 	}
 
 	void platformRegisterCallback(PlatformEventCallback callback) {
-
+		PlatformSingleton& p = platform();
+		p.callbacks.push_back(callback);
     }
 
 	void platformClearCallbacks() {
+		PlatformSingleton& p = platform();
 
+		p.callbacks.clear();
     }
 }

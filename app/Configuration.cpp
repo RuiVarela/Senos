@@ -32,7 +32,7 @@ namespace sns {
 		// save configuration file
 		{
 			json object;
-
+			
 			object["project"]["name"] = configuration.project;
 
 			// header
