@@ -38,6 +38,10 @@ cmake -DCMAKE_BUILD_TYPE=MinSizeRel ..
 cmake --build . -- -j 8
 ./Senos
 
+# Build a release version for mac with arm support
+cmake -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release .. 
+cmake --build . -- -j 8
+
 # To build a Release version on Windows with the VisualStudio toolchain:
 cmake ..
 cmake --build . --config MinSizeRel
