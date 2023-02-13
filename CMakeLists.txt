@@ -41,6 +41,8 @@ set(ENGINE_FILES
 	engine/audio/Recorder.hpp
     engine/audio/Midi.cpp
 	engine/audio/Midi.hpp
+    engine/audio/Analyser.cpp
+	engine/audio/Analyser.hpp
 
 	engine/Engine.cpp
 	engine/Engine.hpp

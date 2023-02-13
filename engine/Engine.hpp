@@ -1,10 +1,10 @@
 #pragma once
 
 #include "core/Worker.hpp"
-#include "audio/CircularBuffer.hpp"
 #include "audio/RunningAverage.hpp"
 #include "audio/Recorder.hpp"
 #include "audio/Midi.hpp"
+#include "audio/Analyser.hpp"
 #include "instrument/Instrument.hpp"
 #include "Sequencer.hpp"
 #include "Chainer.hpp"
@@ -31,6 +31,7 @@ namespace sns {
 
 		Recorder& recorder();
 		Midi& midi();
+		Analyser& analyser();
 		Sequencer& sequencer();
 		Chainer& chainer();
 
@@ -57,6 +58,7 @@ namespace sns {
 		Midi m_midi;
 		Sequencer m_sequencer;
 		Chainer m_chainer;
+		Analyser m_analyser;
 
 		std::list<std::function<void()>> m_actions;
 

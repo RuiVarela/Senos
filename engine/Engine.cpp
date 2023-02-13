@@ -46,6 +46,10 @@ namespace sns {
         return m_midi;
     }
 
+    Analyser& Engine::analyser() {
+        return m_analyser;
+    }
+
     Sequencer& Engine::sequencer() {
         return m_sequencer;
     }
@@ -131,6 +135,13 @@ namespace sns {
             //
             if (m_recorder.isAccepting()) {
                 m_recorder.push(sample);
+            }
+
+            //
+            // send to analyser
+            //
+            if (m_analyser.isAccepting()) {
+                m_analyser.push(sample);
             }
 
             m_produced_samples_counter++;
