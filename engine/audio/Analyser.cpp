@@ -3,15 +3,18 @@
 
 namespace sns {
 
-	Analyser::Analyser() 
-		:m_decimation(0)
-	{
-
+	Analyser::Analyser() {
+		configureGraph(10, 100);
 	}
 
-	void Analyser::setDecimation(int decimation) {
-		m_decimation = decimation;
-		m_max_samples = SampleRate / (decimation + 1);
+	void Analyser::configureGraph(int points, int duration) {
+		m_graph_points = points;
+		m_graph_duration = duration;
+		m_graph_duration_samples = samplesFromMicroseconds(duration);
+	}
+
+	void Analyser::generateGraph(std::vector<float>& points) {
+		
 	}
 
 	bool Analyser::isAccepting() {
@@ -19,12 +22,8 @@ namespace sns {
 	}
 		
 	void Analyser::push(float sample) {
-
-		while (!m_samples.empty() && (m_samples.size() + 1) > m_max_samples) 
-			m_samples.erase(m_samples.begin());
-		
+		while (m_samples.size() == m_samples.capacity()) 
+			m_samples.pop_front();
 		m_samples.push_back(sample);
 	}
-	
-
 }
