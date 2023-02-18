@@ -12,6 +12,7 @@
 #include "app/Platform.hpp"
 #include "engine/core/Log.hpp"
 
+#include <sstream>
 #include <thread>
 
 extern unsigned char app_icon_256_data[256 * 256 * 4 + 1];
@@ -30,6 +31,54 @@ static std::vector<sns::PlatformEvent> platform_events;
 static std::mutex platform_events_mutex;
 
 
+// 
+// Sokol Log
+//
+static void sokol_log(const char* tag, uint32_t log_level, uint32_t log_item, const char* message, uint32_t line_nr, const char* filename, void* user_data) {
+    sns::LogLevel level;
+    switch (log_level) {
+        case 0: level = sns::LogLevel::Error; break; // panic
+        case 1: level = sns::LogLevel::Error; break;
+        case 2: level = sns::LogLevel::Warning; break;
+        default: level = sns::LogLevel::Info; break;
+    }
+
+	std::stringstream stream;
+	stream << "[" << log_item << "]";
+
+    if (filename) {
+        stream << " ";
+        #if defined(_MSC_VER)
+            // MSVC compiler error format
+            stream << filename << "(" << line_nr << "): ";
+        #else
+            // gcc/clang compiler error format
+            stream << filename << ":" << line_nr << ":0: ";
+        #endif
+    }
+    else {
+        stream << "[line:" << line_nr << "] ";
+    }
+
+    if (message) {
+        stream << " -> " << message;
+    }
+
+    if (0 == log_level) {
+        stream << "ABORTING because of [panic]";
+    }
+
+	sns::Log::logger().log(level, tag, stream.str());
+
+	if (0 == log_level) {
+        abort();
+    }
+}
+
+
+//
+// Fonts
+//
 static void destroyFonts() {
 	auto& io = ImGui::GetIO();
 	io.Fonts->Clear();
@@ -96,6 +145,9 @@ static void rebuildFonts() {
 	io.Fonts->TexID = (ImTextureID)(uintptr_t)app_font_image.id;
 }
 
+//
+// Audio
+//
 static void audio_callback(float* buffer, int num_frames, int num_channels) {
 	app.engine().fill(buffer, num_frames, num_channels);
 }
@@ -116,10 +168,12 @@ void restartAudioBackend() {
 	// Audio
 	//
 	saudio_desc audio_des{};
+	audio_des.logger.func = sokol_log;
 	audio_des.sample_rate = sns::SampleRate;
 	audio_des.num_channels = 1;
 	audio_des.stream_cb = audio_callback;
 	audio_des.buffer_frames = app.configuration().audio_buffer_size;
+	
 	saudio_setup(audio_des);
 
 	assert(sns::SampleRate == saudio_sample_rate());
@@ -127,12 +181,16 @@ void restartAudioBackend() {
 	audio_initialized = true;
 }
 
+//
+// App
+//
 static void init(void) {
 	app_font_initialized = false;
 	audio_initialized = false;
 
 	// setup sokol-gfx and sokol-time
 	sg_desc desc = { };
+	desc.logger.func = sokol_log;
 	desc.context = sapp_sgcontext();
 	sg_setup(&desc);
 
@@ -251,6 +309,8 @@ sapp_desc sokol_main(int argc, char* argv[]) {
 	//sns::saveCppBinary(app_icon_256_data, sizeof(app_icon_256_data), "C:\\Users\\ruiva\\Desktop\\dump.cpp");
 
 	sapp_desc desc = { };
+	desc.logger.func = sokol_log;
+
 	desc.window_title = "Senos";
 	desc.icon = icon_desc;
 
