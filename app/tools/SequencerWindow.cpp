@@ -95,6 +95,7 @@ namespace sns {
 		if (m_cfg_loaded) {
 			m_cfg.action = Sequencer::Action::Stop;
 			m_needs_scroll = true;
+			m_rendered_table = false;
 			m_cfg_loaded = false;
 		}
 
