@@ -17,11 +17,10 @@ namespace sns {
 	constexpr float DefaultPressVelocity = 0.65f;
 	constexpr float AccentPressVelocity = 1.0f;
 
-
-	uint64_t audioMicroseconds(uint64_t samples);
-	uint64_t audioMilliseconds(uint64_t samples);
-	uint64_t samplesFromMicroseconds(uint64_t microseconds);
-	uint64_t samplesFromMilliseconds(uint64_t milliseconds);
+	constexpr uint64_t audioMicroseconds(uint64_t samples) { return (samples * Microseconds) / SampleRate; }
+	constexpr uint64_t audioMilliseconds(uint64_t samples) { return (samples * Milliseconds) / SampleRate; }
+	constexpr uint64_t samplesFromMicroseconds(uint64_t microseconds) { return (microseconds * SampleRate) / Microseconds; }
+	constexpr uint64_t samplesFromMilliseconds(uint64_t milliseconds) { return (milliseconds * SampleRate) / Milliseconds; }
 
 	std::string timecode(uint64_t milliseconds);
 

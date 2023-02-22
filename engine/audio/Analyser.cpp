@@ -10,10 +10,12 @@ namespace sns {
 	void Analyser::configureGraph(int points, int duration) {
 		m_graph_points = points;
 		m_graph_duration = duration;
-		m_graph_duration_samples = samplesFromMicroseconds(duration);
+		m_graph_duration_samples = int(samplesFromMicroseconds(duration));
 	}
 
 	void Analyser::generateGraph(std::vector<float>& points) {
+
+
 		
 	}
 
@@ -24,6 +26,7 @@ namespace sns {
 	void Analyser::push(float sample) {
 		while (m_samples.size() == m_samples.capacity()) 
 			m_samples.pop_front();
+
 		m_samples.push_back(sample);
 	}
 }

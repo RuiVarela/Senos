@@ -3,22 +3,6 @@
 
 namespace sns {
 
-	uint64_t audioMicroseconds(uint64_t samples) {
-		return (samples * Microseconds) / SampleRate;
-	}
-
-	uint64_t audioMilliseconds(uint64_t samples) {
-		return (samples * Milliseconds) / SampleRate;
-	}
-
-	uint64_t samplesFromMicroseconds(uint64_t microseconds) {
-		return (microseconds * SampleRate) / Microseconds;
-	}
-
-	uint64_t samplesFromMilliseconds(uint64_t milliseconds) {
-		return (milliseconds * SampleRate) / Milliseconds;
-	}
-
 	std::string timecode(uint64_t milliseconds) {
 		uint64_t ms = milliseconds % uint64_t(1000);
 		uint64_t seconds = (milliseconds / uint64_t(1000)) % uint64_t(60);

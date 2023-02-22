@@ -11,6 +11,8 @@ namespace sns {
 	public:
 		Analyser();
 
+
+
 		bool isAccepting();
 		void push(float sample);
 
@@ -18,6 +20,7 @@ namespace sns {
 		void generateGraph(std::vector<float>& points);
 
 	private:
+		static constexpr int SamplesDuration = (int)audioMilliseconds(SampleRate);
 
 		int m_graph_points; // the number of graphed samples
 		int m_graph_duration;
