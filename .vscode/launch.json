@@ -3,13 +3,14 @@
     "configurations": [
         {
             "name": "debug launch",
-            "type": "lldb",
+            "type": "cppdbg",
             "request": "launch",
             // Resolved by CMake Tools:
             "program": "${command:cmake.launchTargetPath}",
             "args": [],
             "cwd": "${workspaceFolder}/build",
             "console": "externalTerminal",
+            "MIMode": "lldb"
         }, 
         {
             "name": "(msvc) Launch",

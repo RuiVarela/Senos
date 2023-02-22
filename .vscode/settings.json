@@ -1,18 +1,5 @@
 {
     "cmake.configureOnOpen": true,
-    "cmake.configureSettings": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": 1
-    },
-    "cmake.sourceDirectory": "${workspaceFolder}",
-    "cmake.buildDirectory": "${workspaceFolder}/build/${buildKit}/${buildType}",
-    "cmake.copyCompileCommands": "${workspaceFolder}/build/compile_commands.json",
-
-    "clangd.arguments": [
-        "-clang-tidy",
-        "-background-index",
-        "--compile-commands-dir=${workspaceFolder}/build"
-    ],
-
     "files.associations": {
         "__bit_reference": "cpp",
         "__bits": "cpp",
