@@ -189,6 +189,8 @@ set(APP_FILES
     app/tools/SequencerWindow.hpp
     app/tools/ChainerWindow.cpp
     app/tools/ChainerWindow.hpp
+    app/tools/ScopeWindow.cpp
+    app/tools/ScopeWindow.hpp
 
     app/instrument/SynthMachineWindow.hpp
 	app/instrument/SynthMachineWindow.cpp

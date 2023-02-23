@@ -5,6 +5,7 @@
 #include "tools/DebugWindow.hpp"
 #include "tools/SequencerWindow.hpp"
 #include "tools/ChainerWindow.hpp"
+#include "tools/ScopeWindow.hpp"
 
 #include "instrument/SynthMachineWindow.hpp"
 #include "instrument/DrumMachineWindow.hpp"
@@ -188,6 +189,10 @@ namespace sns {
 		ChainerWindow* chainer_window = new ChainerWindow();
 		m_windows.push_back(std::shared_ptr<ChainerWindow>(chainer_window));
 		m_tools.push_back(chainer_window);
+
+		ScopeWindow* scope_window = new ScopeWindow();
+		m_windows.push_back(std::shared_ptr<ScopeWindow>(scope_window));
+		m_tools.push_back(scope_window);
 
 
 
