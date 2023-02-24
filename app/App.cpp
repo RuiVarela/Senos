@@ -376,9 +376,11 @@ namespace sns {
 		ImGuiKey super_mod = ImGuiKey::ImGuiKey_ModSuper;
 		ImGuiKey quit_key = ImGuiKey::ImGuiKey_Q;
 #else 
-		ImGuiKey const super_mod = ImGuiKey::ImGuiKey_ModAlt;
+		ImGuiKey const super_mod = ImGuiKey::ImGuiKey_LeftAlt;
 		ImGuiKey const quit_key = ImGuiKey::ImGuiKey_F4;
 #endif 
+
+		ImGuiKey const ctr_key = ImGuiKey::ImGuiKey_LeftCtrl;
 
 		size_t column = m_menu.size();
 		m_menu.push_back(Menu::value_type());
@@ -401,7 +403,7 @@ namespace sns {
 		int count = 0;
 		for (auto current : m_instruments) {
 			if (current) {
-				m_menu[column].add(current->name(), ImGuiKey_0 + count, ImGuiKey_ModCtrl);
+				m_menu[column].add(current->name(), ImGuiKey_0 + count, ctr_key);
 			}
 			count++;
 		}
@@ -410,7 +412,7 @@ namespace sns {
 		m_menu.push_back(Menu::value_type());
 		m_menu[column].name = "Tools";
 		for (auto current : m_tools) {
-			m_menu[column].add(current->name(), ImGuiKey_0 + count, ImGuiKey_ModCtrl);
+			m_menu[column].add(current->name(), ImGuiKey_0 + count, ctr_key);
 			count++;
 		}
 		m_menu[column].add("-");
@@ -422,7 +424,7 @@ namespace sns {
 		m_menu[column].name = "Window";
 		m_menu[column].add("Toggle Fullscreen", ImGuiKey_F, super_mod);
 		m_menu[column].add("-");
-		m_menu[column].add("Close All", ImGuiKey_0, ImGuiKey_ModCtrl);
+		m_menu[column].add("Close All", ImGuiKey_0, ctr_key);
 		m_menu[column].add("Redistribute");
 		m_menu[column].add("Cascade");
 		m_menu[column].add("-");
@@ -447,6 +449,8 @@ namespace sns {
 					if (item.shortcut_mod != ImGuiKey_None) {
 						std::string mod = ImGui::GetKeyName(ImGuiKey(item.shortcut_mod));
 						replace(mod, "Mod", "");
+						replace(mod, "Left", "");
+						replace(mod, "Right", "");
 
 #ifdef __APPLE__
 						replace(mod, "Super", "Cmd");
@@ -491,12 +495,24 @@ namespace sns {
 		if (!platformHasFileMenu()) {
 			for (auto const& current : m_shortcuts) {
 				if (current.shortcut_key != 0) {
-					if (current.shortcut_mod != 0 && ImGui::GetIO().KeyMods != ImGuiKey(current.shortcut_mod))
-						continue;
+					if (current.shortcut_mod != 0) {
+						ImGuiIO& io = ImGui::GetIO();
+
+						bool mod_pressed = false;
+						ImGuiKey mod_key = ImGuiKey(current.shortcut_mod);
+						if ((mod_key == ImGuiKey::ImGuiKey_LeftAlt || mod_key == ImGuiKey::ImGuiKey_RightAlt) && !io.KeyAlt)
+							continue;
+
+						if ((mod_key == ImGuiKey::ImGuiKey_LeftCtrl || mod_key == ImGuiKey::ImGuiKey_RightCtrl) && !io.KeyCtrl)
+							continue;
+
+						if ((mod_key == ImGuiKey::ImGuiKey_LeftShift || mod_key == ImGuiKey::ImGuiKey_RightCtrl) && !io.KeyShift)
+							continue;
+					}
+
 
 					if (ImGui::IsKeyPressed(ImGuiKey(current.shortcut_key), false))
 						triggerMenuCommand(current.command);
-
 				}
 			}
 		}

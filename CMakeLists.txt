@@ -242,6 +242,9 @@ set(APP_FILES
     vendor/miniz/miniz.cpp
 )
 
+add_compile_definitions(IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1)
+add_compile_definitions(IMGUI_DISABLE_OBSOLETE_KEYIO=1)
+
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
     set(APP_FILES ${APP_FILES} app/Platform_win.cpp)
 

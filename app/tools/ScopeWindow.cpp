@@ -1,6 +1,6 @@
 #include "ScopeWindow.hpp"
 
-
+#include "../App.hpp"
 #include "../engine/core/Log.hpp"
 #include "../vendor/imgui/imgui.h"
 
@@ -12,6 +12,16 @@ namespace sns {
 		TAG = "Scope";
 		m_window_name = "Scope";
 
+		m_time_values = {10, 15, 25, 50, 100, 250, 500 };
+		for (auto current : m_time_values)
+			m_time_names.push_back(sfmt("%d ms", current));
+		m_time = 3;
+
+
+		m_points_values = { 20, 50, 100, 150, 200, 250, 500, 750 };
+		for (auto current : m_points_values)
+			m_points_names.push_back(sfmt("%d", current));
+		m_points = 2;
 	}
 
 	ScopeWindow::~ScopeWindow() {
@@ -21,24 +31,51 @@ namespace sns {
 	void ScopeWindow::render(){
 		beforeRender();
 
+		Analyser& analyser = app()->engine().analyser();
+	
+
 		ImGui::Begin(m_window_name.c_str(), &m_showing, ImGuiWindowFlags_NoResize);
 
-		float width = ImGui::GetTextLineHeightWithSpacing() * 2.0 * 10.0f;
+		if (m_showing && !analyser.isAccepting())
+			updateTime();
+
+		float base_size = ImGui::GetTextLineHeightWithSpacing() * 2.0f;
+
+		app()->engine().analyser().generateGraph(m_samples);
+
+		ImGui::PlotLines("##Lines", m_samples.data(), int(m_samples.size()), 0, 
+			"", -1.0f, 1.0f, 
+			ImVec2(base_size * 10.0f, base_size * 5.0f));
+
+		ImGui::SameLine();
+
+		//
+		// Pickers
+		//
+		ImGui::BeginChild("options_block", ImVec2(base_size * 4.0f, 0), true);
+		{
+			if (pCombo("Time", m_time_names, m_time))
+				updateTime();
+
+			if (pCombo("Points", m_points_names, m_points))
+				updateTime();
+		}
+		ImGui::EndChild();
 
 
-		static float values[100] = {};
-        static int values_offset = 0;
 
-		static float phase = 0.0f;
-		values[values_offset] = cosf(phase);
-		values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
-		phase += 0.10f * values_offset;
+		if (!m_showing) {
+			analyser.stop();
+		}
 
-		ImGui::PlotLines("##Lines", values, IM_ARRAYSIZE(values), 
-			0, "", -1.0f, 1.0f, 
-			ImVec2(width, width / 2.0f));
-        
 		aboutToFinishRender();
 		ImGui::End();
+	}
+
+	void ScopeWindow::updateTime() {
+		Analyser& analyser = app()->engine().analyser();
+
+		analyser.configureGraph(m_points_values[m_points], m_time_values[m_time]);
+		analyser.start();
 	}
 }
