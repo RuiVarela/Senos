@@ -373,7 +373,7 @@ namespace sns {
 		m_menu.clear();
 
 #ifdef __APPLE__
-		ImGuiKey super_mod = ImGuiKey::ImGuiKey_ModSuper;
+		ImGuiKey super_mod = ImGuiKey::ImGuiKey_LeftSuper;
 		ImGuiKey quit_key = ImGuiKey::ImGuiKey_Q;
 #else 
 		ImGuiKey const super_mod = ImGuiKey::ImGuiKey_LeftAlt;
