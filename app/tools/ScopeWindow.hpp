@@ -16,9 +16,11 @@ namespace sns
 	private:
 		std::vector<float> m_samples;
 
-		void updateTime();
+		void updateCapture();
 
 		// pickers
+		bool m_active;
+
 		std::vector<std::string> m_time_names;
 		std::vector<int> m_time_values;
 		int m_time;
@@ -26,5 +28,7 @@ namespace sns
 		std::vector<std::string> m_points_names;
 		std::vector<int> m_points_values;
 		int m_points;
+
+		float m_offset_factor;
 	};
 }

@@ -19,7 +19,7 @@ namespace sns {
 
 		void push(float sample);
 
-		void configureGraph(int points, int duration);
+		void configureGraph(int points, int duration, float offset_factor);
 		void generateGraph(std::vector<float>& points);
 
 	private:

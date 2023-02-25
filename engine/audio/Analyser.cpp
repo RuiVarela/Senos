@@ -1,15 +1,18 @@
 #include "Analyser.hpp"
 #include "Audio.hpp"
 
+#include "../core/Log.hpp"
+
 namespace sns {
 
 	Analyser::Analyser()
 		:m_started(false)
 	{
-		configureGraph(10, 100);
+		configureGraph(10, 100, 0.0f);
 	}
 
-	void Analyser::configureGraph(int points, int duration) {
+	void Analyser::configureGraph(int points, int duration, float offset_factor) {
+		//Log::d("XXXXXX", sfmt("points=%d, duration=%d, offset_factor=%.3f", points, duration, offset_factor));
 		m_graph_points = points;
 
 		m_graph_duration = std::min(duration, SamplesDuration);
@@ -17,9 +20,6 @@ namespace sns {
 	}
 
 	void Analyser::generateGraph(std::vector<float>& points) {
-		if (!m_started)
-			return;
-
 		std::unique_lock<std::mutex> lock(m_samples_mutex);
 
 		if (int(points.size()) != m_graph_points)
