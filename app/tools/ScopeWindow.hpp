@@ -29,6 +29,10 @@ namespace sns
 		std::vector<int> m_points_values;
 		int m_points;
 
+		std::vector<std::string> m_sync_names;
+		std::vector<AnalyserSync> m_sync_values;
+		int m_sync;
+
 		float m_offset_factor;
 	};
 }

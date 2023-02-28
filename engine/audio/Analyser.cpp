@@ -5,18 +5,36 @@
 
 namespace sns {
 
+	std::string toString(AnalyserSync kind) {
+		switch (kind) {
+		case AnalyserSync::None: return "None";
+		case AnalyserSync::RiseZero: return "RiseZero";
+		case AnalyserSync::FallZero: return "FallZero";
+		default: break;
+		}
+		return "[AnalyserSync NOT_SET]";
+	}
+
+
 	Analyser::Analyser()
 		:m_started(false)
 	{
-		configureGraph(10, 100, 0.0f);
+		configureGraph(10, 100, 0.0f, AnalyserSync::None);
 	}
 
-	void Analyser::configureGraph(int points, int duration, float offset_factor) {
-		//Log::d("XXXXXX", sfmt("points=%d, duration=%d, offset_factor=%.3f", points, duration, offset_factor));
+	void Analyser::configureGraph(int points, int duration, float offset_factor, AnalyserSync sync) {
+		m_sync = sync;
+
+		offset_factor = clampTo(offset_factor, 0.0f, 1.0f);
+
 		m_graph_points = points;
 
 		m_graph_duration = std::min(duration, SamplesDuration);
 		m_graph_duration_samples = int(samplesFromMilliseconds(m_graph_duration));
+
+		m_graph_offset = int(float(m_samples.capacity()) * offset_factor);
+		Log::d(TAG, sfmt("points=%d duration=%d graph_offset=%d sync=%s", 
+						 points, duration, m_graph_offset, toString(sync)));
 	}
 
 	void Analyser::generateGraph(std::vector<float>& points) {
@@ -24,12 +42,16 @@ namespace sns {
 
 		if (int(points.size()) != m_graph_points)
 			points.resize(m_graph_points);
+		
+		// we still did not receive enough samples
+		if (int(m_samples.size()) < m_graph_duration_samples)
+			return;
 
 		float increment = float(m_graph_duration_samples) / float(m_graph_points);
-		int start_index = int(m_samples.size()) - m_graph_duration_samples;
+		int start_index = int(m_samples.size()) - m_graph_offset - m_graph_duration_samples;
 
-		if (start_index < 0)
-			return;
+	
+		start_index = clampAbove(start_index, 0);
 		
 		for (int i = 0; i != m_graph_points; ++i) {
 			float factor = float(i) * increment;

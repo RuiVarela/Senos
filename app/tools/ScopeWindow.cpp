@@ -25,6 +25,12 @@ namespace sns {
 		for (auto current : m_points_values)
 			m_points_names.push_back(sfmt("%d", current));
 		m_points = 2;
+
+
+		m_sync_values = {AnalyserSync::None, AnalyserSync::RiseZero, AnalyserSync::FallZero};
+		for (auto current : m_sync_values)
+			m_sync_names.push_back(toString(current));
+		m_sync = 0;
 	}
 
 	ScopeWindow::~ScopeWindow() {
@@ -61,15 +67,22 @@ namespace sns {
 
 			if (pCombo("Time", m_time_names, m_time))
 				updateCapture();
-
-			if (pCombo("Points", m_points_names, m_points))
-				updateCapture();
-
+			
 			float f = 1.0f - m_offset_factor;
 			if (ImGui::SliderFloat("Offset", &f, 0.0f, 1.0f, "")) {
 				m_offset_factor = 1.0f - f;
 				updateCapture();
 			}
+
+			if (pCombo("Sync", m_sync_names, m_sync))
+				updateCapture();
+
+			ImGui::Separator();
+
+			if (pCombo("Points", m_points_names, m_points))
+				updateCapture();
+
+
 		}
 		ImGui::EndChild();
 
@@ -86,7 +99,11 @@ namespace sns {
 	void ScopeWindow::updateCapture() {
 		Analyser& analyser = app()->engine().analyser();
 
-		analyser.configureGraph(m_points_values[m_points], m_time_values[m_time], m_offset_factor);
+		analyser.configureGraph(
+			m_points_values[m_points], 
+			m_time_values[m_time], 
+			m_offset_factor,
+			m_sync_values[m_sync]);
 
 		if (m_active)
 			analyser.start();
