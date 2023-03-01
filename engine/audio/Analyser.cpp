@@ -48,10 +48,33 @@ namespace sns {
 			return;
 
 		float increment = float(m_graph_duration_samples) / float(m_graph_points);
-		int start_index = int(m_samples.size()) - m_graph_offset - m_graph_duration_samples;
-
-	
+		int start_index = int(m_samples.size()) - m_graph_duration_samples;
 		start_index = clampAbove(start_index, 0);
+
+		if (m_sync != AnalyserSync::None) {
+			int index = start_index;
+
+			if (m_sync == AnalyserSync::RiseZero) {
+				if (m_samples[index] < 0.0f)
+					while (index && m_samples[index] <= 0.0f) --index;
+
+				if (m_samples[index] > 0.0f)
+					while (index && m_samples[index] > 0.0f) --index;
+			} else if (m_sync == AnalyserSync::FallZero) {
+				if (m_samples[index] > 0.0f)
+					while (index && m_samples[index] > 0.0f) --index;
+
+				if (m_samples[index] < 0.0f)
+					while (index && m_samples[index] <= 0.0f) --index;
+			}
+
+			if (index > 0)
+				start_index = index;
+		}
+
+
+		start_index = clampAbove(start_index - m_graph_offset, 0);
+
 		
 		for (int i = 0; i != m_graph_points; ++i) {
 			float factor = float(i) * increment;
@@ -63,10 +86,12 @@ namespace sns {
 
 	void Analyser::start() {
 		m_started = true;
+		Log::d(TAG, "start");
 	}
 
 	void Analyser::stop() {
 		m_started = false;
+		Log::d(TAG, "stop");
 	}
 
 	bool Analyser::isAccepting() {
