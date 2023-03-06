@@ -43,6 +43,12 @@ namespace sns {
 		m_note_keys[int(Sequencer::NoteMode::Press)] = ImGuiKey_P;
 		m_note_keys[int(Sequencer::NoteMode::Accent)] = ImGuiKey_A;
 		m_note_keys[int(Sequencer::NoteMode::Hold)] = ImGuiKey_H;
+
+
+		m_move_names[int(MoveKind::Up)] = (const char*)ICON_MDI_ARROW_UP "Up";
+		m_move_names[int(MoveKind::Down)] = (const char*)ICON_MDI_ARROW_DOWN "Down";
+		m_move_names[int(MoveKind::Left)] = (const char*)ICON_MDI_ARROW_LEFT "Left";
+		m_move_names[int(MoveKind::Right)] = (const char*)ICON_MDI_ARROW_RIGHT "Right";
 	}
 
 	SequencerWindow::~SequencerWindow() {
@@ -359,16 +365,7 @@ namespace sns {
 						}
 					}
 
-					if (ImGui::BeginPopupContextItem("context_popup")) {
-						for (int mode_i = int(Sequencer::NoteMode::Off); mode_i != int(Sequencer::NoteMode::Count); ++mode_i) {
-							Sequencer::NoteMode mode = Sequencer::NoteMode(mode_i);
-							if (ImGui::Selectable(sfmt("%s %s", m_note_icons[int(mode)], toString(mode)).c_str())) {
-								m_cfg.setStepState(m_cfg.ui_selected_instrument, step_index, note, mode);
-								m_cfg_updated = true;
-							}
-						}
-						ImGui::EndPopup();
-					}
+					renderPopup(step_index, note);
 
 					ImGui::PopStyleVar(1);
 					ImGui::PopStyleColor(1);
@@ -401,6 +398,35 @@ namespace sns {
 		ImGui::PopStyleVar(1);
 	}
 
+	void SequencerWindow::renderPopup(int step_index, int note) {
+		if (ImGui::BeginPopupContextItem("context_popup")) {
+			ImGui::SeparatorText("Step");
+			for (int mode_i = int(Sequencer::NoteMode::Off); mode_i != int(Sequencer::NoteMode::Count); ++mode_i) {
+				Sequencer::NoteMode mode = Sequencer::NoteMode(mode_i);
+				if (ImGui::Selectable(sfmt("%s %s", m_note_icons[mode_i], toString(mode)).c_str())) {
+					m_cfg.setStepState(m_cfg.ui_selected_instrument, step_index, note, mode);
+					m_cfg_updated = true;
+				}
+			}
+
+			ImGui::SeparatorText((const char*)ICON_MDI_BORDER_STYLE " " ICON_MDI_ARROW_BOTTOM_RIGHT);
+
+			for (int kind_i = int(MoveKind::Up); kind_i != int(MoveKind::Count); ++kind_i) {
+				MoveKind kind = MoveKind(kind_i);
+				if (ImGui::Selectable(m_move_names[kind_i])) {
+					handleMove(MoveKind(kind_i), step_index, note);
+					m_cfg_updated = true;
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
+	void SequencerWindow::handleMove(MoveKind kind, int step_index, int note) {
+		Log::d(TAG, sfmt("handleMove %d - %d | %d", int(kind), step_index, note));
+	}
+
 	void SequencerWindow::onRefreshPresets() {
 		m_preset_names = sequenceNames(app()->configuration());
 	}
@@ -420,6 +446,7 @@ namespace sns {
 		m_cfg = sns::loadSequence(app()->configuration(), name);
 		m_cfg_loaded = true;
 	}
+	
 
 
 }

@@ -18,6 +18,7 @@ namespace sns {
 	private:
 		void renderTopBar();
 		void renderTable(float height);
+		void renderPopup(int step_index, int note);
 
 		void onSavePreset(std::string const& name) override;
 		void onLoadPreset(std::string const& name) override;
@@ -36,5 +37,16 @@ namespace sns {
 
 		char const* m_note_icons[int(Sequencer::NoteMode::Count)];
 		int m_note_keys[int(Sequencer::NoteMode::Count)];
+
+		enum class MoveKind {
+			Up,
+			Down,
+			Left,
+			Right,
+
+			Count
+		};
+		char const* m_move_names[int(MoveKind::Count)];
+		void handleMove(MoveKind kind, int step_index, int note);
 	};
 }
