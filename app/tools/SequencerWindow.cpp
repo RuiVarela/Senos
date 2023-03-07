@@ -314,7 +314,7 @@ namespace sns {
 				}
 			}
 
-			for (int note = (TotalNotes - 1); note > 12; note--) {
+			for (int note = (TotalNotes - 1); note >= 12; note--) {
 
 				ImGui::TableNextRow();
 
@@ -425,6 +425,25 @@ namespace sns {
 
 	void SequencerWindow::handleMove(MoveKind kind, int step_index, int note) {
 		Log::d(TAG, sfmt("handleMove %d - %d | %d", int(kind), step_index, note));
+
+		if (kind == MoveKind::Left) {
+			for (int current_note = 0; current_note <= note; current_note++) {
+				for (int current_step = step_index; current_step != m_cfg.step_count; current_step++) {
+					if (current_step == 0) continue;
+					Sequencer::NoteMode mode = m_cfg.stepState(m_cfg.ui_selected_instrument, current_step, current_note);
+					m_cfg.setStepState(m_cfg.ui_selected_instrument, current_step - 1, current_note, mode);
+				}
+				m_cfg.setStepState(m_cfg.ui_selected_instrument, m_cfg.step_count - 1, current_note, Sequencer::NoteMode::Off);
+			}
+		} else if (kind == MoveKind::Right) {
+			for (int current_note = 0; current_note <= note; current_note++) {
+				for (int current_step = (m_cfg.step_count - 1); current_step > step_index; current_step--){
+					Sequencer::NoteMode mode = m_cfg.stepState(m_cfg.ui_selected_instrument, current_step - 1, current_note);
+					m_cfg.setStepState(m_cfg.ui_selected_instrument, current_step, current_note, mode);
+				}
+				m_cfg.setStepState(m_cfg.ui_selected_instrument, step_index, current_note, Sequencer::NoteMode::Off);
+			}
+		}
 	}
 
 	void SequencerWindow::onRefreshPresets() {
