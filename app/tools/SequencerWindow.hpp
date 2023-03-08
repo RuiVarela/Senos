@@ -47,6 +47,7 @@ namespace sns {
 			Count
 		};
 		char const* m_move_names[int(MoveKind::Count)];
+		void handleInputs(int step_index, int note, Sequencer::NoteMode value);
 		void handleMove(MoveKind kind, int step_index, int note);
 	};
 }

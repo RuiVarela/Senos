@@ -349,21 +349,12 @@ namespace sns {
 					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
 					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 					Sequencer::NoteMode value = m_cfg.stepState(m_cfg.ui_selected_instrument, step_index, note);
-					if (ImGui::Button(m_note_icons[int(value)], button_size)) {
+					if (ImGui::Button(sfmt("%s###btn", m_note_icons[int(value)]).c_str(), button_size)) {
 						m_cfg.toggleStepState(m_cfg.ui_selected_instrument, step_index, note);
 						m_cfg_updated = true;
 					}
 
-					if (ImGui::IsItemHovered()) {
-						for (int mode_i = int(Sequencer::NoteMode::Off); mode_i != int(Sequencer::NoteMode::Count); ++mode_i) {
-							Sequencer::NoteMode mode = Sequencer::NoteMode(mode_i);
-							ImGuiKey key = ImGuiKey(m_note_keys[mode_i]);
-							if (ImGui::IsKeyDown(key) && value != mode) {
-								m_cfg.setStepState(m_cfg.ui_selected_instrument, step_index, note, mode);
-								m_cfg_updated = true;
-							}
-						}
-					}
+					handleInputs(step_index, note, value);
 
 					renderPopup(step_index, note);
 
@@ -398,6 +389,33 @@ namespace sns {
 		ImGui::PopStyleVar(1);
 	}
 
+	void SequencerWindow::handleInputs(int step_index, int note, Sequencer::NoteMode value) {
+		if (ImGui::IsItemHovered()) {
+			for (int mode_i = int(Sequencer::NoteMode::Off); mode_i != int(Sequencer::NoteMode::Count); ++mode_i) {
+				Sequencer::NoteMode mode = Sequencer::NoteMode(mode_i);
+				ImGuiKey key = ImGuiKey(m_note_keys[mode_i]);
+				if (ImGui::IsKeyDown(key) && value != mode) {
+					m_cfg.setStepState(m_cfg.ui_selected_instrument, step_index, note, mode);
+					m_cfg_updated = true;
+				}
+			}
+
+		}
+
+		if (ImGui::IsItemHovered()) {
+			if (ImGui::GetIO().KeyShift) {
+				if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_LeftArrow, false))
+					handleMove(MoveKind::Left, step_index, note);
+				else if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_RightArrow, false))
+					handleMove(MoveKind::Right, step_index, note);
+				else if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_UpArrow, false))
+					handleMove(MoveKind::Up, step_index, note);
+				else if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_DownArrow, false))
+					handleMove(MoveKind::Down, step_index, note);
+			}
+		}
+	}
+
 	void SequencerWindow::renderPopup(int step_index, int note) {
 		if (ImGui::BeginPopupContextItem("context_popup")) {
 			ImGui::SeparatorText("Step");
@@ -424,9 +442,26 @@ namespace sns {
 	}
 
 	void SequencerWindow::handleMove(MoveKind kind, int step_index, int note) {
-		Log::d(TAG, sfmt("handleMove %d - %d | %d", int(kind), step_index, note));
+		//Log::d(TAG, sfmt("handleMove %d - %d | %d", int(kind), step_index, note));
 
-		if (kind == MoveKind::Left) {
+		if (kind == MoveKind::Down) {
+			for (int current_step = step_index; current_step != m_cfg.step_count; current_step++) {
+				for (int current_note = 1; current_note <= note; current_note++) {
+					Sequencer::NoteMode mode = m_cfg.stepState(m_cfg.ui_selected_instrument, current_step, current_note);
+					m_cfg.setStepState(m_cfg.ui_selected_instrument, current_step, current_note - 1, mode);
+				}
+				m_cfg.setStepState(m_cfg.ui_selected_instrument, current_step, note, Sequencer::NoteMode::Off);
+			}
+		} else if (kind == MoveKind::Up) {
+			for (int current_step = step_index; current_step != m_cfg.step_count; current_step++) {
+				for (int current_note = note; current_note > 0; current_note--) {
+					if (current_note == (TotalNotes - 1)) continue;
+					Sequencer::NoteMode mode = m_cfg.stepState(m_cfg.ui_selected_instrument, current_step, current_note);
+					m_cfg.setStepState(m_cfg.ui_selected_instrument, current_step, current_note + 1, mode);
+				}
+				m_cfg.setStepState(m_cfg.ui_selected_instrument, current_step, 0, Sequencer::NoteMode::Off);
+			}
+		} else if (kind == MoveKind::Left) {
 			for (int current_note = 0; current_note <= note; current_note++) {
 				for (int current_step = step_index; current_step != m_cfg.step_count; current_step++) {
 					if (current_step == 0) continue;
@@ -437,9 +472,9 @@ namespace sns {
 			}
 		} else if (kind == MoveKind::Right) {
 			for (int current_note = 0; current_note <= note; current_note++) {
-				for (int current_step = (m_cfg.step_count - 1); current_step > step_index; current_step--){
-					Sequencer::NoteMode mode = m_cfg.stepState(m_cfg.ui_selected_instrument, current_step - 1, current_note);
-					m_cfg.setStepState(m_cfg.ui_selected_instrument, current_step, current_note, mode);
+				for (int current_step = (m_cfg.step_count - 2); current_step >= step_index; current_step--){
+					Sequencer::NoteMode mode = m_cfg.stepState(m_cfg.ui_selected_instrument, current_step, current_note);
+					m_cfg.setStepState(m_cfg.ui_selected_instrument, current_step + 1, current_note, mode);
 				}
 				m_cfg.setStepState(m_cfg.ui_selected_instrument, step_index, current_note, Sequencer::NoteMode::Off);
 			}
