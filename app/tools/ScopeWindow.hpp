@@ -4,7 +4,6 @@
 
 namespace sns
 {
-
 	class ScopeWindow : public Window
 	{
 	public:

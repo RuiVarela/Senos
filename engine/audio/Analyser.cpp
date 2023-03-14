@@ -3,6 +3,7 @@
 
 #include "../core/Log.hpp"
 
+
 namespace sns {
 
 	std::string toString(AnalyserSync kind) {
@@ -84,14 +85,24 @@ namespace sns {
 		}
 	}
 
-	void Analyser::start() {
+	void Analyser::start(std::string const& key) {
+		bool already_started = m_started;
+
+		remove(m_keys, key);
+		m_keys.push_back(key);
 		m_started = true;
-		Log::d(TAG, "start");
+
+		if (!already_started)
+			Log::d(TAG, "start");
 	}
 
-	void Analyser::stop() {
-		m_started = false;
-		Log::d(TAG, "stop");
+	void Analyser::stop(std::string const& key) {
+		if (m_started) {
+			remove(m_keys, key);
+			m_started = !m_keys.empty();
+			if (!m_started)
+				Log::d(TAG, "stop");
+		}
 	}
 
 	bool Analyser::isAccepting() {

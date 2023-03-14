@@ -6,6 +6,7 @@
 #include "tools/SequencerWindow.hpp"
 #include "tools/ChainerWindow.hpp"
 #include "tools/ScopeWindow.hpp"
+#include "tools/VUMeterWindow.hpp"
 
 #include "instrument/SynthMachineWindow.hpp"
 #include "instrument/DrumMachineWindow.hpp"
@@ -193,6 +194,10 @@ namespace sns {
 		ScopeWindow* scope_window = new ScopeWindow();
 		m_windows.push_back(std::shared_ptr<ScopeWindow>(scope_window));
 		m_tools.push_back(scope_window);
+
+		VUMeterWindow* vu_meter_window = new VUMeterWindow();
+		m_windows.push_back(std::shared_ptr<VUMeterWindow>(vu_meter_window));
+		m_tools.push_back(vu_meter_window);
 
 
 

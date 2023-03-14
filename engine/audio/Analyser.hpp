@@ -19,8 +19,8 @@ namespace sns {
 	public:
 		Analyser();
 
-		void start();
-		void stop();
+		void start(std::string const& key);
+		void stop(std::string const& key);
 		bool isAccepting();
 
 		void push(float sample);
@@ -33,6 +33,7 @@ namespace sns {
 		const std::string TAG = "Analyser";
 		AnalyserSync m_sync;
 
+
 		int m_graph_points; // the number of graphed samples
 		int m_graph_duration;
 		int m_graph_duration_samples;
@@ -42,6 +43,7 @@ namespace sns {
 		std::mutex m_samples_mutex;
 
 		bool m_started;
+		std::vector<std::string> m_keys;
 	};
 
 	std::string toString(AnalyserSync kind);

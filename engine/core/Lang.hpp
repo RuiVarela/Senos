@@ -77,6 +77,9 @@ namespace sns {
 	inline bool contains(A const& container, B const& value) { return std::find(container.begin(), container.end(), value) != container.end(); }
 
 	template<class A, typename B>
+	inline void remove(A& container, B const& value) { container.erase(std::remove(container.begin(), container.end(), value), container.end()); }
+
+	template<class A, typename B>
 	inline int findIndex(A const& container, B const& value, int defaultIndex = -1) { 
 		for (size_t i = 0; i != container.size(); ++i)
 			if (container[i] == value) return int(i);

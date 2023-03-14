@@ -89,7 +89,7 @@ namespace sns {
 
 
 		if (analyser.isAccepting() && (!m_showing || !m_active)) {
-			analyser.stop();
+			analyser.stop(TAG);
 		}
 
 		aboutToFinishRender();
@@ -106,6 +106,6 @@ namespace sns {
 			m_sync_values[m_sync]);
 
 		if (m_active)
-			analyser.start();
+			analyser.start(TAG);
 	}
 }

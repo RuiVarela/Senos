@@ -191,6 +191,8 @@ set(APP_FILES
 	app/tools/ChainerWindow.hpp
 	app/tools/ScopeWindow.cpp
 	app/tools/ScopeWindow.hpp
+	app/tools/VUMeterWindow.cpp
+	app/tools/VUMeterWindow.hpp
 
 	app/instrument/SynthMachineWindow.hpp
 	app/instrument/SynthMachineWindow.cpp
