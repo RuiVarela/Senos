@@ -13,6 +13,7 @@ namespace sns
 		void render() override;
 
 	private:
+		int m_levels;
 
 	};
 }
