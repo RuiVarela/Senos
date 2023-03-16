@@ -10,7 +10,7 @@ namespace sns {
 	{
 		TAG = "VU";
 		m_window_name = "VU Meter";
-		m_levels = 20;
+		m_levels = 24;
 	}
 
 	VUMeterWindow::~VUMeterWindow() {
@@ -22,39 +22,66 @@ namespace sns {
 
 		Analyser& analyser = app()->engine().analyser();
 	
-		ImGui::Begin(m_window_name.c_str(), &m_showing, ImGuiWindowFlags_NoResize);
+		ImGui::Begin("VU", &m_showing, ImGuiWindowFlags_NoResize);
 
         if (m_showing && !analyser.isAccepting())
 			analyser.start(TAG);
 
-		float db = 30.0f;
-		ImGui::Text("%d db", int(db));
+		const float current_linear = float(sns::getCurrentMilliseconds() % 5000) / 5000.0f;
+		const float current_db = toDb(current_linear);
+		const std::string text = sfmt("%05.1f db", current_db);
 
-		float h = ImGui::GetTextLineHeight() / 2.0f;
-		float w = h * 8.0f;
+		const float base_size = ImGui::GetTextLineHeightWithSpacing();
+		const float h = ImGui::GetTextLineHeight();
+		const float w = h * 2.3f;
 
+		const float step0 = 21.0f / 30.0f;
+		const float step1 = 27.0f / 30.0f;
+		const float step_delta = 1.0f / float(m_levels);
 
-		float step0 = 18.0f / 30.0f;
-		float step1 = 24.0f / 30.0f;
+		ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(text.c_str()).x) / 2.f);
+		ImGui::Text("%s", text.c_str());
 
-		for (int i = 0; i != m_levels; ++i) {
-			float factor = float(m_levels - i) / float(m_levels);
+		ImGui::BeginChild("bars_block", ImVec2(w, m_levels * base_size + base_size), false);
+		{
+			ImGui::Dummy(ImVec2(base_size, h/3.0f));
 
-			float alpha = 0.2f;
-			ImVec4 color;
-			if (factor > step1) {
-				color = ImVec4(1.0f, 0.0f, 0.0f, alpha);
-			} else if (factor > step0)  {
-				color = ImVec4(1.0f, 1.0f, 0.0f, alpha);
-			} else {
-				color = ImVec4(0.0f, 1.0f, 0.0f, alpha);
+			for (int i = 0; i != m_levels; ++i) {
+				float f_start = float(m_levels - i - 1) * step_delta;
+				float alpha = (current_linear >= f_start) ? 1.0 : 0.2f;
+				ImVec4 color;
+				if (f_start >= step1) {
+					color = ImVec4(1.0f, 0.0f, 0.0f, alpha);
+				} else if (f_start >= step0)  {
+					color = ImVec4(1.0f, 1.0f, 0.0f, alpha);
+				} else {
+					color = ImVec4(0.0f, 1.0f, 0.0f, alpha);
+				}
+
+				ImVec2 p = ImGui::GetCursorScreenPos();
+				ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + w, p.y + h), ImGui::ColorConvertFloat4ToU32(color));
+				ImGui::Dummy(ImVec2(w, h));
+
 			}
-
-			ImVec2 p = ImGui::GetCursorScreenPos();
-            ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + w, p.y + h), ImGui::ColorConvertFloat4ToU32(color));
-            ImGui::Dummy(ImVec2(w, h));
-
 		}
+		ImGui::EndChild();
+
+		ImGui::SameLine();
+
+		ImGui::BeginChild("labels_block", ImVec2(base_size * 1.8f, (m_levels + 1) * base_size), false);
+		{
+			for (int i = 0; i != (m_levels + 1); ++i) {
+				float factor = float(m_levels - i) * step_delta;
+				float db = toDb(factor);
+				if (equivalent(db, 0.0f)) 
+					ImGui::Text(" 0");
+				else
+					ImGui::Text("%05.1f", db);
+			}
+		}
+		ImGui::EndChild();
+
+
 
 		if (!m_showing && analyser.isAccepting())
 			analyser.stop(TAG);
