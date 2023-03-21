@@ -34,7 +34,7 @@ set(ENGINE_FILES
 	engine/audio/Easing.cpp
 	engine/audio/Easing.hpp	
 	engine/audio/CircularBuffer.hpp	
-	engine/audio/RunningAverage.hpp	
+	engine/audio/RunningStats.hpp	
 	engine/audio/Wav.cpp
 	engine/audio/Wav.hpp
 	engine/audio/Recorder.cpp

@@ -27,7 +27,7 @@ namespace sns {
         if (m_showing && !analyser.isAccepting())
 			analyser.start(TAG);
 
-		const float current_linear = float(sns::getCurrentMilliseconds() % 5000) / 5000.0f;
+		const float current_linear = analyser.rms();
 		const float current_db = toDb(current_linear);
 		const std::string text = sfmt("%05.1f db", current_db);
 

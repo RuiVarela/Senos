@@ -3,6 +3,7 @@
 #include "../core/Lang.hpp"
 #include "Audio.hpp"
 #include "CircularBuffer.hpp"
+#include "RunningStats.hpp"
 
 #include <vector>
 #include <mutex>
@@ -27,6 +28,7 @@ namespace sns {
 
 		void configureGraph(int points, int duration, float offset_factor, AnalyserSync sync);
 		void generateGraph(std::vector<float>& points);
+		float rms();
 
 	private:
 		static constexpr int SamplesDuration = (int)audioMilliseconds(SampleRate);
@@ -41,6 +43,8 @@ namespace sns {
 
 		CircularBuffer<float, SampleRate> m_samples;
 		std::mutex m_samples_mutex;
+
+		RunningRms m_rms;
 
 		bool m_started;
 		std::vector<std::string> m_keys;

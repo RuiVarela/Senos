@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/Worker.hpp"
-#include "audio/RunningAverage.hpp"
+#include "audio/RunningStats.hpp"
 #include "audio/Recorder.hpp"
 #include "audio/Midi.hpp"
 #include "audio/Analyser.hpp"

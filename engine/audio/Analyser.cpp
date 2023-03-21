@@ -18,7 +18,7 @@ namespace sns {
 
 
 	Analyser::Analyser()
-		:m_started(false)
+		:m_started(false), m_rms(samplesFromMilliseconds(100))
 	{
 		configureGraph(10, 100, 0.0f, AnalyserSync::None);
 	}
@@ -85,6 +85,11 @@ namespace sns {
 		}
 	}
 
+	float Analyser::rms() {
+		std::unique_lock<std::mutex> lock(m_samples_mutex);
+		return m_rms.rms();
+	}
+
 	void Analyser::start(std::string const& key) {
 		bool already_started = m_started;
 
@@ -116,5 +121,7 @@ namespace sns {
 			m_samples.pop_front();
 
 		m_samples.push_back(sample);
+
+		m_rms.add(sample);
 	}
 }
