@@ -3,6 +3,7 @@
 #include "../App.hpp"
 #include "../engine/core/Log.hpp"
 #include "../vendor/imgui/imgui.h"
+#include "../tools/VUMeterWindow.hpp"
 
 
 namespace sns {
@@ -63,7 +64,16 @@ namespace sns {
 		//
 		ImGui::BeginChild("options_block", ImVec2(base_size * 4.0f, 0), true);
 		{
+			bool running_disabled = app()->getWindow<VUMeterWindow>()->showing();
+			
+			if (running_disabled) 
+				ImGui::BeginDisabled(true);
 			ImGui::Checkbox("Running", &m_active);
+			if (running_disabled) {
+				ImGui::EndDisabled();
+				ImGui::SameLine();
+				pHelpMarker("Disabled while VU Meter opened");
+			}
 
 			if (pCombo("Time", m_time_names, m_time))
 				updateCapture();

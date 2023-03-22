@@ -18,7 +18,7 @@ namespace sns {
 
 
 	Analyser::Analyser()
-		:m_started(false), m_rms(samplesFromMilliseconds(100))
+		:m_started(false)
 	{
 		configureGraph(10, 100, 0.0f, AnalyserSync::None);
 	}
@@ -85,9 +85,23 @@ namespace sns {
 		}
 	}
 
-	float Analyser::rms() {
+	float Analyser::peak() {
 		std::unique_lock<std::mutex> lock(m_samples_mutex);
-		return m_rms.rms();
+		constexpr int sample_count = samplesFromMilliseconds(150);
+		float max = 0.0f;
+
+		if (int(m_samples.size()) <= sample_count)
+			return max;
+		
+		int counter = 0;
+		while (counter != sample_count) {
+			const int index = m_samples.size() - 1 - counter;
+			const float v = std::abs(m_samples[index]);
+			if (v > max)
+				max = v;
+			++counter;
+		}
+		return max;
 	}
 
 	void Analyser::start(std::string const& key) {
@@ -121,7 +135,5 @@ namespace sns {
 			m_samples.pop_front();
 
 		m_samples.push_back(sample);
-
-		m_rms.add(sample);
 	}
 }

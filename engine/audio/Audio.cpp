@@ -11,7 +11,7 @@ namespace sns {
 		return sfmt("%02d:%02d:%02d.%03d", hours, minutes, seconds, ms);
 	}
 
-	constexpr static float MIN_DB = -96.f;
+	constexpr static float MIN_DB = -30.0f;//-96.f;
 
 	float toDb(float linear) {
 		return linear > 0.f ? 20.f * std::log10(linear) : MIN_DB;

@@ -27,7 +27,7 @@ namespace sns {
         if (m_showing && !analyser.isAccepting())
 			analyser.start(TAG);
 
-		const float current_linear = analyser.rms();
+		const float current_linear = analyser.peak();
 		const float current_db = toDb(current_linear);
 		const std::string text = sfmt("%05.1f db", current_db);
 
@@ -48,7 +48,7 @@ namespace sns {
 
 			for (int i = 0; i != m_levels; ++i) {
 				float f_start = float(m_levels - i - 1) * step_delta;
-				float alpha = (current_linear >= f_start) ? 1.0 : 0.2f;
+				float alpha = (current_linear > f_start) ? 1.0 : 0.2f;
 				ImVec4 color;
 				if (f_start >= step1) {
 					color = ImVec4(1.0f, 0.0f, 0.0f, alpha);
