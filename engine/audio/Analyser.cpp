@@ -87,7 +87,7 @@ namespace sns {
 
 	float Analyser::peak() {
 		std::unique_lock<std::mutex> lock(m_samples_mutex);
-		constexpr int sample_count = samplesFromMilliseconds(150);
+		constexpr int sample_count = int(samplesFromMilliseconds(150L));
 		float max = 0.0f;
 
 		if (int(m_samples.size()) <= sample_count)
@@ -95,7 +95,7 @@ namespace sns {
 		
 		int counter = 0;
 		while (counter != sample_count) {
-			const int index = m_samples.size() - 1 - counter;
+			const int index = int(m_samples.size()) - 1 - counter;
 			const float v = std::abs(m_samples[index]);
 			if (v > max)
 				max = v;
