@@ -19,7 +19,7 @@ Play Setup | Instruments | Sequencer | Chainer   | Analyser
 - Midi Support
 - Wav Recording
 - Projects minimal management
-- a couple of [demo songs](https://github.com/RuiVarela/Senos/tree/main/songs)
+- A couple of [demo songs](https://github.com/RuiVarela/Senos/tree/main/songs)
 
 ## Development
 ```bash
