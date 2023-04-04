@@ -2,9 +2,9 @@
 Senos is sound exploration tool from a developer point of view.   
 It is very lightweight, can be used as a toy or a minimal song composer.
 
-Play Setup | Instruments | Sequencer | Chainer
-:---------:|:-----------:|:---------:|:---------:
-![Play](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/00.png) | ![Instruments](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/01.png) | ![Sequencer](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/02.png) | ![Chainer](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/03.png)
+Play Setup | Instruments | Sequencer | Chainer   | Analyser  
+:---------:|:-----------:|:---------:|:---------:|:---------:
+![Play](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/00.png) | ![Instruments](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/01.png) | ![Sequencer](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/02.png) | ![Chainer](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/03.png) | ![Analyser](https://raw.githubusercontent.com/RuiVarela/Senos/main/docs/04.png)
 
 
 ## Features
