@@ -3,7 +3,7 @@ project(Senos)
 
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 3)
-set(VERSION_BUILD 2)
+set(VERSION_BUILD 3)
 
 add_compile_definitions(VERSION_MAJOR=${VERSION_MAJOR})
 add_compile_definitions(VERSION_MINOR=${VERSION_MINOR})
