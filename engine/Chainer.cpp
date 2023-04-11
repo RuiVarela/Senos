@@ -67,17 +67,20 @@ namespace sns {
 				auto const& idata = chain.sequence.instruments[instrument];
 				if (idata.muted) continue;
 
-				for (auto const& [step_note, note_mode] : idata.steps) {
-					auto [step, note] = step_note;
-					if (note_mode == Sequencer::NoteMode::Off)
-						continue;
-					if (step >= chain.sequence.step_count)
-						continue;
+				chain.valid = true;
+				m_cfg.valid = true;
 
-					chain.valid = true;
-					m_cfg.valid = true;
-					break;
-				}
+				// for (auto const& [step_note, note_mode] : idata.steps) {
+				// 	auto [step, note] = step_note;
+				// 	if (note_mode == Sequencer::NoteMode::Off)
+				// 		continue;
+				// 	if (step >= chain.sequence.step_count)
+				// 		continue;
+
+				// 	chain.valid = true;
+				// 	m_cfg.valid = true;
+				// 	break;
+				// }
 
 				if (chain.valid)
 					break;
