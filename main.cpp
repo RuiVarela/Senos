@@ -326,9 +326,7 @@ sapp_desc sokol_main(int argc, char* argv[]) {
 
 	//desc.html5_ask_leave_site = false;
 	//desc.ios_keyboard_resizes_canvas = false;
-	//desc.gl_force_gles2 = true;
 	//desc.enable_clipboard = false;
-
 
 	return desc;
 }
