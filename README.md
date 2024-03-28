@@ -33,7 +33,7 @@ cd build
 cmake ..
 cmake --build .
 
-# To build a Release version on Linux and Mac:
+# To build a Release version on Mac:
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake -DCMAKE_BUILD_TYPE=MinSizeRel ..
 cmake --build . -- -j 8
